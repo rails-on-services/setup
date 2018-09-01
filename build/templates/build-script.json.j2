@@ -1,0 +1,32 @@
+#jinja2: lstrip_blocks: True
+{
+{% if env.builders is defined %}
+  "builders": [
+  {% for key in (env.builders._order | default(env.builders.keys())) %}
+    {{ env.builders[key] | to_nice_json }}{{ ',' if not loop.last else '' }}
+  {% endfor %}
+  ]{{ ',' if env.provisioners is defined or env.post_processors is defined else '' }}
+{% endif %}
+{% if env.provisioners is defined %}
+  "provisioners": [
+  {% for key in (env.provisioners._order | default(env.provisioners.keys())) %}
+    {{ env.provisioners[key] | to_nice_json }}{{ ',' if not loop.last else '' }}
+  {% endfor %}
+  ]{{ ',' if env.post_processors is defined else '' }}
+{% endif %}
+{% if env.post_processors is defined %}
+  "post-processors": [
+  {% for key in (env.post_processors._order | default(env.post_processors.keys())) %}
+    {% if env.post_processors[key] is iterable and env.post_processors[key] is not mapping and env.post_processors[key] is not string %}
+    [
+      {% for prov in env.post_processors[key] %}
+      {{ prov | to_nice_json }}{{ ',' if not loop.last else '' }}
+      {% endfor %}
+    ]{{ ',' if not loop.last else '' }}
+    {% else %}
+    {{ env.post_processors[key] | to_nice_json }}{{ ',' if not loop.last else '' }}
+    {% endif %}
+  {% endfor %}
+  ]
+{% endif %}
+}

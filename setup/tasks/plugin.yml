@@ -1,0 +1,27 @@
+
+- name: Check for plugin
+  stat:
+    path: '{{ packer_plugin_dir }}/{{ plugin.key }}'
+  register: plugin_path
+
+- set_fact:
+    packer_archive_file: '{{ ansible_env.TMPDIR }}/{{ plugin.value.dest }}'
+
+- name: Get vagrant-s3 plugin
+  get_url:
+    url: '{{ plugin.value.url }}'
+    dest: '{{ packer_archive_file }}'
+  when: not plugin_path.stat.exists
+  register: new_archive
+
+- name: Install Plugin
+  unarchive:
+    src: '{{ packer_archive_file }}'
+    dest: '{{ packer_plugin_dir }}'
+    copy: no
+  when: new_archive is changed
+
+- name: Remove zip
+  file:
+    path: '{{ packer_archive_file }}'
+    state: absent

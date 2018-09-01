@@ -1,0 +1,27 @@
+---
+- name: Install packer on Debian
+  include_tasks: debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Install packer on MacOS
+  homebrew:
+    name: packer
+    state: present
+  when: false # ansible_os_family == 'Darwin'
+
+- name: Ensure packer plugins directory exists
+  file:
+    path: '{{ packer_plugin_dir }}'
+    state: directory
+
+- name: Install plugins
+  include_tasks: plugin.yml
+  with_dict: '{{ packer_plugins }}'
+  loop_control:
+    loop_var: plugin
+  when: false
+
+- name: Copy config
+  copy:
+    src: packer.yml
+    dest: inventory/local/host_vars/prepd/packer.yml

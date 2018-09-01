@@ -1,0 +1,52 @@
+---
+builders:
+  virtualbox_iso:
+    disk_size: 20240
+    headless: no
+    http_directory: 'build/{{ spec.distribution }}'
+    output_directory: 'build/{{ spec.distribution }}/{{ spec.version }}/{{ spec.target }}'
+    ssh_password:  '{{ spec.ssh_password }}'
+    # ssh_port: 22
+    ssh_username: '{{ spec.ssh_username }}'
+    ssh_wait_timeout: 10000s
+    type: virtualbox-iso
+    vm_name: '{{ spec.vm_name }}'
+    vboxmanage:
+      - '["modifyvm", "{% raw %}{{.Name}}{% endraw %}", "--memory", "1024"]'
+      - '["modifyvm", "{% raw %}{{.Name}}{% endraw %}", "--cpus", "1"]'
+
+provisioners:
+  _order: [guest_additions, ansible]
+  # _order: [shell_1, ansible]
+  # _order: [shell_1, shell_2, ansible]
+  sudo:
+    type: shell
+    execute_command: "echo '{{ spec.ssh_username }}' {% raw %}| {{ .Vars }} sudo -E -S sh '{{ .Path }}'{% endraw %}"
+    inline:
+      # - "mkdir -p /home/vagrant/.ssh"
+      # - "chmod 0700 /home/vagrant/.ssh"
+      # - "wget --no-check-certificate https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub -O /home/vagrant/.ssh/authorized_keys"
+      # - "chmod 0600 /home/vagrant/.ssh/authorized_keys"
+      # - "chown -R vagrant /home/vagrant/.ssh"
+      # - "echo '%sudo    ALL=(ALL)  NOPASSWD:ALL' >> /etc/sudoers"
+      # - "echo 'vagrant    ALL=(ALL)  NOPASSWD:ALL' >> /etc/sudoers"
+      - "echo '%wheel    ALL=(ALL)  NOPASSWD:ALL' >> /etc/sudoers"
+  guest_additions:
+    type: shell
+    inline:
+      - "sleep 3"
+      - "echo 'yes' | sudo m-a prepare"
+      - "sudo mkdir /tmp/vboxguest"
+      - "sudo mount -t iso9660 -o loop /home/vagrant/VBoxGuestAdditions.iso /tmp/vboxguest"
+      - "cd /tmp/vboxguest"
+      - "sudo ./VBoxLinuxAdditions.run"
+      - "cd /tmp"
+      - "sudo umount /tmp/vboxguest"
+      - "sudo rmdir /tmp/vboxguest"
+      - "rm /home/vagrant/VBoxGuestAdditions.iso"
+
+post_processors:
+  vagrant:
+    type: vagrant
+    keep_input_artifact: yes
+    output: 'boxes/{{ spec.owner }}/{{ spec.version }}-{{ spec.target }}.box'

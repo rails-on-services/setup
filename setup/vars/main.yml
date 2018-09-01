@@ -1,0 +1,9 @@
+---
+packer_version: 1.2.1
+packer_file: packer_1.2.1_linux_amd64
+packer_plugin_dir: '{{ ansible_env.HOME }}/.packer.d/plugins'
+
+packer_plugins:
+  packer-post-processor-vagrant-s3:
+    url: "https://github.com/lmars/packer-post-processor-vagrant-s3/releases/download/1.4.0/packer-post-processor-vagrant-s3-1.4.0-{{ 'darwin' if ansible_os_family == 'Darwin' else 'linux' }}-amd64.zip"
+    dest: "packer-post-processor-vagrant-s3-1.4.0-{{ 'darwin' if ansible_os_family == 'Darwin' else 'linux' }}-amd64.zip"
