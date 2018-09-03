@@ -1,27 +1,45 @@
 ---
-- name: Install packer on Debian
+- include_role:
+    name: prepd-cli/prompt
+  vars:
+    role_config:
+      work_dir: '{{ ansible_env.HOME }}/packer'
+      owner: ''
+      aws_s3_bucket: ''
+      aws_region: ''
+      ssh_username: ''
+      ssh_private_key_file: '{{ ansible_env.HOME }}/.ssh/id_rsa'
+    label: packer
+
+- name: Install binary on Debian
   include_tasks: debian.yml
   when: ansible_os_family == 'Debian'
 
-- name: Install packer on MacOS
+- name: Install binary on MacOS
   homebrew:
     name: packer
     state: present
-  when: false # ansible_os_family == 'Darwin'
+  when: ansible_os_family == 'Darwin'
 
-- name: Ensure packer plugins directory exists
+- name: Ensure plugins directory exists
   file:
-    path: '{{ packer_plugin_dir }}'
+    path: '{{ spec.plugin_dir }}'
     state: directory
 
 - name: Install plugins
   include_tasks: plugin.yml
-  with_dict: '{{ packer_plugins }}'
+  with_dict: '{{ spec.plugins }}'
   loop_control:
     loop_var: plugin
   when: false
 
-- name: Copy config
-  copy:
-    src: packer.yml
-    dest: inventory/local/host_vars/prepd/packer.yml
+- name: 'Template config to {{ cli_vars_dir }}/packer.yml'
+  template:
+    src: cli.yml.j2
+    dest: '{{ cli_vars_dir }}/packer.yml'
+
+- name: 'Template playbook to {{ playbook_dir }}/packer.yml'
+  template:
+    src: packer.yml.j2
+    dest: '{{ playbook_dir }}/packer.yml'
+    mode: 0755

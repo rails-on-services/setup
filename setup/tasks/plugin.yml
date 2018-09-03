@@ -1,7 +1,7 @@
 
 - name: Check for plugin
   stat:
-    path: '{{ packer_plugin_dir }}/{{ plugin.key }}'
+    path: '{{ spec.plugin_dir }}/{{ plugin.key }}'
   register: plugin_path
 
 - set_fact:
@@ -17,7 +17,7 @@
 - name: Install Plugin
   unarchive:
     src: '{{ packer_archive_file }}'
-    dest: '{{ packer_plugin_dir }}'
+    dest: '{{ spec.plugin_dir }}'
     copy: no
   when: new_archive is changed
 

@@ -1,0 +1,39 @@
+#jinja2: lstrip_blocks: True
+{% set dbl = '{{' %}
+#!/usr/bin/env ansible-playbook
+---
+- name: Configure the base image
+  hosts: base
+  tasks:
+    - include_role:
+        name: prepd/runner/module
+      vars:
+        manifest:
+          roles: [machine-config, user, packer/base-provision]
+          user:
+            username: {{ spec.ssh_username }}
+            shell: /bin/zsh
+            authorized_key: https://github.com/{{ spec.ssh_username }}.keys
+            groups: wheel # docker,wheel
+
+- name: Configure the developer image
+  hosts: developer
+  tasks:
+    - include_role:
+        name: prepd/runner/module
+      vars:
+        manifest:
+          roles: [yadr, tmuxinator]
+          yadr:
+            git_user:
+              name: Developer Name
+              email: developer@email.com
+
+- name: Configure the minikube image
+  hosts: minikube
+  tasks:
+    - include_role:
+        name: prepd/runner/module
+      vars:
+        manifest:
+          roles: [docker, k8s/minikube, k8s/kubectl]

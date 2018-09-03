@@ -2,6 +2,7 @@
 builders:
   virtualbox_iso:
     disk_size: 20240
+    guest_additions_path: /tmp/VBoxGuestAdditions.iso
     headless: no
     http_directory: 'build/{{ spec.distribution }}'
     output_directory: 'build/{{ spec.distribution }}/{{ spec.version }}/{{ spec.target }}'
@@ -17,33 +18,26 @@ builders:
 
 provisioners:
   _order: [guest_additions, ansible]
-  # _order: [shell_1, ansible]
-  # _order: [shell_1, shell_2, ansible]
+  # NOTE: probably get rid of sudo provisioner as wheel is added by the preseed
   sudo:
     type: shell
     execute_command: "echo '{{ spec.ssh_username }}' {% raw %}| {{ .Vars }} sudo -E -S sh '{{ .Path }}'{% endraw %}"
     inline:
-      # - "mkdir -p /home/vagrant/.ssh"
-      # - "chmod 0700 /home/vagrant/.ssh"
-      # - "wget --no-check-certificate https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub -O /home/vagrant/.ssh/authorized_keys"
-      # - "chmod 0600 /home/vagrant/.ssh/authorized_keys"
-      # - "chown -R vagrant /home/vagrant/.ssh"
-      # - "echo '%sudo    ALL=(ALL)  NOPASSWD:ALL' >> /etc/sudoers"
-      # - "echo 'vagrant    ALL=(ALL)  NOPASSWD:ALL' >> /etc/sudoers"
       - "echo '%wheel    ALL=(ALL)  NOPASSWD:ALL' >> /etc/sudoers"
+  # NOTE: guest_additions is debian specific as it invokes m-a prepare
   guest_additions:
     type: shell
     inline:
       - "sleep 3"
       - "echo 'yes' | sudo m-a prepare"
       - "sudo mkdir /tmp/vboxguest"
-      - "sudo mount -t iso9660 -o loop /home/vagrant/VBoxGuestAdditions.iso /tmp/vboxguest"
+      - "sudo mount -t iso9660 -o loop /tmp/VBoxGuestAdditions.iso /tmp/vboxguest"
       - "cd /tmp/vboxguest"
       - "sudo ./VBoxLinuxAdditions.run"
       - "cd /tmp"
       - "sudo umount /tmp/vboxguest"
       - "sudo rmdir /tmp/vboxguest"
-      - "rm /home/vagrant/VBoxGuestAdditions.iso"
+      - "rm /tmp/VBoxGuestAdditions.iso"
 
 post_processors:
   vagrant:

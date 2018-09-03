@@ -6,14 +6,14 @@
 
 - name: Get binary
   get_url:
-    url: 'https://releases.hashicorp.com/packer/{{ packer_version }}/{{ packer_file }}.zip'
-    dest: '{{ ansible_env.HOME }}/{{ packer_file }}.zip'
+    url: 'https://releases.hashicorp.com/packer/{{ spec.version }}/{{ spec.file }}.zip'
+    dest: '{{ ansible_env.HOME }}/{{ spec.file }}.zip'
   when: not binary_file.stat.exists
   register: new_archive
 
 - name: Install Binary
   unarchive:
-    src: '{{ ansible_env.HOME }}/{{ packer_file }}.zip'
+    src: '{{ ansible_env.HOME }}/{{ spec.file }}.zip'
     dest: /usr/local/bin
     copy: no
   when: not binary_file.stat.exists
@@ -21,6 +21,6 @@
 
 - name: Remove zip
   file:
-    path: '{{ ansible_env.HOME }}/{{ packer_file }}.zip'
+    path: '{{ ansible_env.HOME }}/{{ spec.file }}.zip'
     state: absent
   when: false

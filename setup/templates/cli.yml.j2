@@ -1,0 +1,26 @@
+#jinja2: lstrip_blocks: True
+{% set dbl = '{{' %}
+---
+commands:
+  packer: packer
+
+config:
+  packer:
+    # _select: [work_dir, distribution, version, profile, source, target, owner, aws_s3_bucket, aws_profile, aws_region, push]
+    _select: [profile, source, target, owner, push]
+    work_dir: {{ role_spec.work_dir }}
+    distribution: debian
+    version: stretch64
+    profile: iso # iso or build
+    source: iso # base # iso
+    target: base # minikube # base
+    owner: {{ role_spec.owner }}
+    aws_s3_bucket: {{ role_spec.aws_s3_bucket }}
+    aws_profile: default
+    aws_region: {{ role_spec.aws_region }}
+    push: no
+    box_version: 0.0.1
+    bump_version: patch # minor, major
+    ssh_username: {{ role_spec.ssh_username }}
+    ssh_password: "{{ dbl }} 999999999999999999999 | random | string | to_uuid }}"
+    ssh_private_key_file: '{{ ansible_env.HOME }}/.ssh/id_rsa'

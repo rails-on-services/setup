@@ -27,7 +27,7 @@
 
 - name: 'Create {{ spec.work_dir }}/{{ spec.scripts_dir }}'
   file:
-    path: '{{ spec.work_dir }}/{{ spec.scripts_dir }}'
+    path: '{{ spec.work_dir }}/{{ spec.scripts_dir }}/{{ spec.version }}'
     state: directory
 
 - name: 'Template {{ spec.work_dir }}/{{ spec.build_script }}'
@@ -45,6 +45,7 @@
   template:
     src: '{{ spec.distribution }}/{{ spec.version }}/{{ distro_version_env.boot_file }}.j2'
     dest: '{{ spec.work_dir }}/{{ spec.scripts_dir }}/{{ spec.version }}/{{ distro_version_env.boot_file }}'
+  when: spec.profile == 'iso'
 
 - name: 'Build from {{ spec.build_script }}'
   command: 'packer build --force {{ spec.build_script }}'
