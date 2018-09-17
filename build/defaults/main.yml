@@ -2,10 +2,12 @@
 base_env:
   provisioners:
     ansible:
-      groups: ['{{ role_spec.target }}']
+      groups: ['packer-{{ role_spec.target }}']
       playbook_file: '{{ playbook_dir }}/packer.yml'
       type: ansible
       user: "{{ role_spec.ssh_username | default('vagrant') }}"
+      ansible_env_vars:
+        - "ANSIBLE_RETRY_FILES_ENABLED=false"
 
 base_spec:
   scripts_dir: 'build/{{ role_spec.distribution }}'
