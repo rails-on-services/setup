@@ -2,38 +2,42 @@
 {% set dbl = '{{' %}
 #!/usr/bin/env ansible-playbook
 ---
-- name: Configure the base image
+- name: Configure the base box
   hosts: base
   tasks:
+    - include_role:
+        name: packer/base-provision
     - include_role:
         name: prepd/runner/module
       vars:
         manifest:
-          roles: [machine-config, user, packer/base-provision]
+          roles: [machine-config, user]
           user:
             username: {{ spec.ssh_username }}
             shell: /bin/zsh
             authorized_key: https://github.com/{{ spec.ssh_username }}.keys
-            groups: wheel # docker,wheel
+            groups: wheel
+          machine-config:
+            time_zone: Asia/Singapore
 
-- name: Configure the developer image
-  hosts: developer
+- name: Configure the development box
+  hosts: development
   tasks:
     - include_role:
         name: prepd/runner/module
       vars:
         manifest:
-          roles: [yadr, tmuxinator]
+          roles: [ansible, yadr, tmuxinator]
           yadr:
             git_user:
               name: Developer Name
               email: developer@email.com
 
-- name: Configure the minikube image
+- name: Configure the minikube box
   hosts: minikube
   tasks:
     - include_role:
         name: prepd/runner/module
       vars:
         manifest:
-          roles: [docker, k8s/minikube, k8s/kubectl]
+          roles: [docker, k8s/kubectl, k8s/minikube/setup]
