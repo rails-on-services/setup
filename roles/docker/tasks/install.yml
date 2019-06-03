@@ -1,0 +1,48 @@
+# NOTE: This playbook assumes a Debian based system
+---
+- name: Include python role
+  include_role:
+    name: prepd/python
+  when: false
+
+- name: Install dependencies
+  apt:
+    name: [apt-transport-https, ca-certificates, wget, software-properties-common, bash-completion]
+    state: present
+    update_cache: yes
+
+- name: Install docker debian gpg key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: Add docker repo to apt
+  apt_repository:
+    repo: 'deb [arch=amd64] https://download.docker.com/linux/debian stretch stable'
+
+- name: Install docker
+  apt:
+    name: docker-ce
+    state: present
+
+- name: Add ansible_env.USER to docker group
+  user:
+    name: '{{ ansible_env.USER }}'
+    groups: docker
+    append: yes
+
+- name: Make sure docker service is running
+  systemd:
+    name: docker
+    state: started
+
+- name: Install docker python libs
+  pip:
+    name: [docker, docker-compose]
+    state: present
+
+- name: Install bash completion for docker
+  get_url:
+    url: https://raw.githubusercontent.com/docker/machine/master/contrib/completion/bash/docker-machine.bash
+    dest: /etc/bash_completion.d/docker
+    mode: 0644

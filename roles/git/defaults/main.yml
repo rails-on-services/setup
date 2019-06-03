@@ -1,0 +1,10 @@
+---
+base_spec:
+  hub_version: 2.2.9
+  repositories: {}
+  project_dir: '{{ ansible_env.HOME }}'
+
+  # Next line not currently in use
+  # creds_file: '{{ ansible_env.HOME }}/.gitconfig.user'
+
+spec: '{{ base_spec | combine(role_spec, recursive=True) }}'

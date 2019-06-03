@@ -1,0 +1,16 @@
+---
+- name: Check if the requested ruby version is already installed
+  stat:
+    path: '{{ spec.rbenv_dir }}/versions/{{ version }}'
+  register: ruby_dir
+
+- debug: msg='{{ spec.rbenv_dir }}/versions/{{ version }}'
+
+- name: 'Install ruby {{ version }}'
+  shell: '. /etc/profile && rbenv install {{ version }}'
+  when: ruby_dir.stat.isdir is not defined
+
+- name: Set global rbenv version
+  shell: '. /etc/profile && rbenv global {{ version }}'
+  when: ruby_dir.stat.isdir is not defined
+

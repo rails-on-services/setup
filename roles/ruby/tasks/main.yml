@@ -1,0 +1,116 @@
+---
+- name: 'Install on detected OS ({{ ansible_os_family }})'
+  include_tasks: '{{ ansible_os_family | lower }}.yml'
+
+- name: Clone rbenv ruby-build
+  git:
+    repo: https://github.com/rbenv/ruby-build.git
+    dest: '{{ spec.rbenv_plugin_dir }}/ruby-build'
+    update: no
+
+- name: Clone rbenv ruby-default-gems
+  git:
+    repo: https://github.com/rbenv/rbenv-default-gems.git
+    dest: '{{ spec.rbenv_plugin_dir }}/rbenv-default-gems'
+    update: no
+
+- name: Copy rbenv default-gems
+  copy:
+    src: default-gems
+    dest: '{{ spec.rbenv_dir }}/default-gems'
+
+- include_tasks: install.yml
+  with_items: '{{ spec.versions }}'
+  loop_control:
+    loop_var: version
+
+- name: Ensure the ~/.bundle directory exists
+  file:
+    path: '{{ spec.bundle_dir }}'
+    state: directory
+
+- name: Create ~/.bundle/config unless it already exists
+  template:
+    src: bundle_config.j2
+    dest: '{{ spec.bundle_dir }}/config'
+    force: no
+
+- name: Insert rbenv code into profile
+  include_role:
+    name: aliases
+  vars:
+    type: profile
+    aliases_marker: ruby
+    aliases_block: |
+      export PATH="$HOME/.rbenv/bin:$PATH"
+      eval "$(rbenv init -)"
+
+- name: Insert aliases
+  include_role:
+    name: aliases
+  vars:
+    aliases_marker: ruby
+    aliases_block: |
+      alias adc='spring rake app:db:clean'
+      alias adcm='spring rake app:db:clean:migrate'
+      alias adcms='spring rake app:db:clean:migrate:seed'
+      alias adcs='spring rake app:db:clean:seed'
+      alias adm='spring rake app:db:migrate'
+      alias ads='spring rake app:db:seed'
+      alias adtp='spring rake app:db:test:prepare'
+
+      alias beg='bundle exec guard'
+
+      alias cop='rubocop'
+      alias copa='rubocop -a'
+      alias copd='rubocop -D'
+
+      alias dc='spring rake db:clean'
+      alias dcm='spring rake db:clean:migrate'
+      alias dcms='spring rake db:clean:migrate:seed'
+      alias dcs='spring rake db:clean:seed'
+      alias dm='spring rake db:migrate'
+      alias dms='spring rake db:migrate:status'
+      alias ds='spring rake db:seed'
+      alias dtp='spring rake db:test:prepare'
+
+      alias fs='foreman start -e <()'
+
+      alias pss='ps -ef|grep spring'
+
+      alias rc='spring rails console'
+
+      alias rg='spring rails generate'
+      alias rgjc='spring rails generate jsonapi:controller'
+      alias rgjr='spring rails generate jsonapi:resource'
+      alias rgm='spring rails generate model'
+
+      # NOTE: bes() only works if there is one line in the Procfile
+      function bes() {
+        E=`awk '{first = $1; $1 = ""; print $0; }' Procfile`
+        eval $E
+      }
+
+      function psrk() {
+        ps aux | grep ruby | awk '{ print $2 }' | xargs kill -9
+      }
+
+      function rgj() {
+        spring rails generate jsonapi:controller "$1"
+        spring rails generate jsonapi:resource "$1"
+      }
+
+      function srs() {
+        z $1
+        cd spec/dummy
+        spring rails server -b 0.0.0.0 -p $2
+      }
+
+      alias rk='spring rake'
+      alias rkd='RAILS_ENV=test spring rake docs:generate'
+
+      alias rs='spring rspec'
+
+      alias sgpl='spring stop; git checkout Gemfile.lock; git pull'
+      alias src='spring stop; rc'
+      alias ss='spring stop'

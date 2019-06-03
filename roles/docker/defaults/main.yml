@@ -1,0 +1,5 @@
+---
+base_spec:
+  logins: {}
+
+spec: '{{ base_spec | combine(role_spec | default({}), recursive=True) }}'

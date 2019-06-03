@@ -1,0 +1,13 @@
+---
+# - name: 'Development databases {{ role.state }}'
+- name: 'Create database {{ item.name }}'
+  postgresql_db:
+    name: '{{ item.name }}'
+    # owner: '{{ role.username }}'
+    # login_host: '{{ role.login_host }}'
+    login_user: '{{ ansible_user }}'
+    login_password: '{{ item.password }}'
+    # state: '{{ role.state }}'
+  # become: yes
+  # become_user: postgres
+  with_items: '{{ postgres_databases }}'

@@ -1,0 +1,4 @@
+# prepd/docker/tasks/deploy.yml
+---
+- debug: msg=docker-deploy
+- include: pull-images.yml

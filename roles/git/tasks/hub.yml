@@ -1,0 +1,44 @@
+---
+- name: Check if Hub binary exists
+  stat:
+    path: /usr/local/bin/hub
+  register: hub_binary
+
+- name: Get hub binary
+  get_url:
+    url: 'https://github.com/github/hub/releases/download/v{{ hub_version }}/hub-linux-amd64-{{ hub_version }}.tgz'
+    dest: '{{ ansible_env.HOME }}/hub.tgz'
+  when: hub_binary.stat.exists == false
+  register: new_archive
+
+- name: Expand download
+  unarchive:
+    src: '{{ ansible_env.HOME }}/hub.tgz'
+    dest: '{{ ansible_env.HOME }}'
+    copy: no
+  when: new_archive|changed
+
+- name: Install Hub
+  command: ./install
+  args:
+    chdir: '{{ ansible_env.HOME }}/hub-linux-amd64-{{ hub_version }}'
+  become: yes
+  when: new_archive|changed
+
+- name: Remove downloads
+  file:
+    path: '{{ ansible_env.HOME }}/{{ item }}'
+    state: absent
+  with_items:
+    - 'hub-linux-amd64-{{ hub_version }}'
+    - 'hub.tgz'
+  when: new_archive|changed
+
+- name: Insert aliases
+  blockinfile:
+    create: yes
+    dest: '{{ machine.aliases_file }}'
+    marker: '# {mark} ANSIBLE MANAGED BLOCK (git)'
+    block: |
+      alias gsu='git submodule update --remote --merge'
+  when: machine.shell == 'zsh'

@@ -1,0 +1,10 @@
+---
+- name: Dump database
+  # NOTE: the -Fc dumps the database in a compressed binary format (not gzip)
+  shell: 'pg_dump -Fc -h {{ envs.DATABASE_HOST }} -U {{ envs.DATABASE_USERNAME }} -d {{ envs.DATABASE_NAME }} -w -f {{ sql_file }}'
+
+- name: Copy database dump to data directory on local machine
+  fetch:
+    src: '{{ sql_file }}'
+    dest: '{{ dest_file }}'
+    flat: yes

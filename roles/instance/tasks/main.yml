@@ -1,0 +1,15 @@
+---
+- name: Insert path to ros gem
+  include_role:
+    name: aliases
+  vars:
+    type: profile
+    aliases_marker: ros
+    aliases_block: |
+      export PATH=$PATH:{{ project_dir }}/ros-cli/exe
+      export RUBYLIB=$RUBYLIB:{{ project_dir }}/ros-cli/lib
+
+- name: install ros-cli dependencies
+  shell: . /etc/profile && ~/.rbenv/shims/bundle install
+  args:
+    chdir: '{{ project_dir }}/ros-cli'

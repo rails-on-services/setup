@@ -1,0 +1,3 @@
+---
+- name: Restore database dump
+  shell: 'pg_restore --no-owner --clean --no-privileges -h {{ envs.DATABASE_HOST }} -U {{ envs.DATABASE_USERNAME }} -d {{ envs.DATABASE_NAME }} -w {{ sql_file }}'

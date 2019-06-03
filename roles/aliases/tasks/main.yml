@@ -1,0 +1,38 @@
+---
+- name: Get the user shell
+  command: echo $SHELL
+  register: shell
+  changed_when: false
+
+- debug:
+    msg: 'User shell value is {{ shell.stdout }}'
+
+- set_fact:
+    aliases_file: {
+      '/bin/zsh': '.zsh.after/aliases.zsh',
+      '/usr/bin/zsh': '.zsh.after/aliases.zsh',
+      '/usr/local/bin/zsh': '.zsh.after/aliases.zsh',
+      '/bin/bash': '.bash_aliases'
+    }
+    profile_file: {
+      '/bin/zsh': '.zprofile',
+      '/usr/bin/zsh': '.zprofile',
+      '/usr/local/bin/zsh': '.zprofile',
+      '/bin/bash': '.profile'
+    }
+
+- name: Insert aliases
+  blockinfile:
+    create: yes
+    dest: "{{ ansible_env.HOME }}/{{ aliases_file[shell.stdout] | default('/tmp/test') }}"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK ({{ aliases_marker }})'
+    block: '{{ aliases_block }}'
+  when: type == 'aliases'
+
+- name: Insert profile
+  blockinfile:
+    create: yes
+    dest: "{{ ansible_env.HOME }}/{{ profile_file[shell.stdout] | default('/tmp/test') }}"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK ({{ aliases_marker }})'
+    block: '{{ aliases_block }}'
+  when: type == 'profile'

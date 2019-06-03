@@ -1,0 +1,13 @@
+---
+- name: Ensure the project path exists
+  file:
+    path: '{{ git_dir }}'
+    state: directory
+
+- name: Clone the project repositories
+  git:
+    repo: '{{ item.url }}'
+    dest: "{{ git_dir }}/{{ item.name | default(item.url.split('/')[-1] | replace('.git', '')) }}"
+    accept_hostkey: yes
+    update: no
+  with_items: '{{ git_repositories }}'

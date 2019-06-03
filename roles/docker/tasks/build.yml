@@ -1,0 +1,10 @@
+---
+# NOTE: This is a legacy task that is here if we want to agian use ansible to build docker images
+#       It would need to be refactored to work
+# See: http://docs.ansible.com/ansible/docker_image_module.html
+- name: 'Build {{ image_directory }} docker images'
+  docker_image:
+    path: '{{ project.directory }}/{{ item.name }}'
+    name: '{{ project.docker_registry }}/{{ item.name }}'
+    state: present
+  with_items: '{{ project.docker_images }}'

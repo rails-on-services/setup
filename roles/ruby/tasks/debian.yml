@@ -1,0 +1,19 @@
+---
+- name: Install Ruby
+  apt:
+    name: '{{ spec.ruby_packages }}'
+    update_cache: yes
+    cache_valid_time: 86400
+  become: yes
+
+- name: Install package dependencies for debian 
+  apt:
+    name: '{{ spec.os_packages }}'
+    state: present
+    update_cache: yes
+    cache_valid_time: 86400
+  become: yes
+
+- name: Update rubygems
+  command: gem update --system
+  become: yes

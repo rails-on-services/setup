@@ -1,0 +1,11 @@
+---
+- name: 'Install on detected OS ({{ ansible_os_family }})'
+  include_tasks: '{{ ansible_os_family | lower }}.yml'
+
+- name: Insert aliases
+  include_role:
+    name: aliases
+  vars:
+    aliases_marker: redis
+    aliases_block: |
+      alias redis-cli='rlwrap -a -- redis-cli'

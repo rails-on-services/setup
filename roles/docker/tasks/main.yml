@@ -1,0 +1,39 @@
+---
+- name: Check if docker exists
+  stat:
+    path: /usr/bin/docker
+  register: binary
+
+- import_tasks: install.yml
+  become: yes
+  when: not binary.stat.exists
+  # TODO: try this sometime:
+  # creates: /usr/bin/docker
+
+- name: Login to docker repositories
+  docker_login:
+    registry: "{{ login.value.registry | default('https://index.docker.io/v1/') }}"
+    username: '{{ login.value.username }}'
+    password: '{{ login.value.password }}'
+    email: '{{ login.value.email }}'
+  with_dict: '{{ spec.logins }}'
+  loop_control:
+    loop_var: login
+
+- include_role:
+    name: aliases
+  vars:
+    aliases_marker: docker
+    aliases_block: |
+      alias di='docker images'
+      alias drmi='docker rmi'
+      alias dps='docker ps'
+      alias dpsa='docker ps -a'
+      drma() {
+        docker stop $(docker ps -a -q)
+        docker rm $(docker ps -a -q)
+      }
+      alias dc='docker-compose'
+      alias dup='docker-compose up'
+      alias dce='docker-compose exec'
+      alias dcr='docker-compose restart'

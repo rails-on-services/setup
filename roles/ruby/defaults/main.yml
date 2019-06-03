@@ -1,0 +1,10 @@
+---
+base_spec:
+  versions: ['2.6.3']
+  rbenv_dir: '{{ ansible_env.HOME }}/.rbenv'
+  rbenv_plugin_dir: '{{ ansible_env.HOME }}/.rbenv/plugins'
+  bundle_dir: '{{ ansible_env.HOME }}/.bundle'
+  ruby_packages: [ruby, ruby-dev, rbenv] #, ruby-bundler]
+  os_packages: [build-essential, sqlite3, libsqlite3-dev, libreadline-dev, graphviz, bzip2, libssl1.0-dev, libxml2-dev, zlib1g-dev, g++]
+
+spec: '{{ base_spec | combine(role_spec | default({}), recursive=True) }}'

@@ -1,0 +1,17 @@
+---
+base_spec:
+  home: /var/lib/postgresql
+  users: {}
+  databases: {}
+
+  # postgres_permitted_network: '192.168.0.0/24'
+  # postgres:
+  #   username: '{{ ansible_user }}'
+  #   password: '{{ ansible_user }}'
+  #   login_host: localhost
+  #   login_user: '{{ ansible_user }}'
+  #   login_password: '{{ ansible_user }}'
+  #   state: present
+  #   docker_network: 172.17.0.1/24
+
+spec: '{{ base_spec | combine(role_spec, recursive=True) }}'

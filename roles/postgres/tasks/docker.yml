@@ -1,0 +1,15 @@
+---
+# NOTE: The location of config can be operating system dependent, e.g. ubuntu is diff from debian
+# - name: 'Listen on all interfaces to allow connection from docker'
+#   lineinfile:
+#     dest: /etc/postgresql/9.4/main/postgresql.conf
+#     line: listen_addresses = '*'
+#   become: yes
+#   notify: Restart PostgreSQL
+
+# - name: 'Trust connections from docker IP'
+#   lineinfile:
+#     dest: /etc/postgresql/9.4/main/pg_hba.conf
+#     line: 'host    all         all         {{ postgres_permitted_network }}    trust'
+#   become: yes
+#   notify: Restart PostgreSQL

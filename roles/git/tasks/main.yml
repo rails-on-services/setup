@@ -1,0 +1,10 @@
+---
+- include_tasks: clone.yml
+
+- name: Insert aliases
+  include_role:
+    name: aliases
+  vars:
+    aliases_marker: git
+    aliases_block: |
+      alias gsu='git submodule update --remote --merge'

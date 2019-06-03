@@ -1,0 +1,22 @@
+# Clone a reposiotry into a specified directory
+---
+# Options:
+# update: yes; when update is yes then the repo will be refreshed
+# version: a specific branch to checkout; default is HEAD
+# - debug: var=properties
+
+- name: Ensure target directory exists
+  file:
+    dest: '{{ spec.project_dir }}'
+    state: directory
+
+- name: Checkout git repository
+  git:
+    repo: '{{ repo.value.url }}'
+    dest: '{{ spec.project_dir }}/{{ repo.value.name | default(repo.key) }}'
+    accept_hostkey: yes
+    update: no
+    version: "{{ repo.value.version | default('master') }}"
+  with_dict: '{{ spec.repositories }}'
+  loop_control:
+    loop_var: repo

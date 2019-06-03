@@ -1,0 +1,5 @@
+---
+base_spec:
+  packages: []
+
+spec: '{{ base_spec | combine(role_spec, recursive=True) }}'

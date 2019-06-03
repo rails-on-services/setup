@@ -1,0 +1,18 @@
+---
+- name: Log in to docker registry
+  docker_login:
+    registry: '{{ docker_logins[properties.container_registry].registry }}'
+    username: '{{ docker_logins[properties.container_registry].username }}'
+    password: '{{ docker_logins[properties.container_registry].password }}'
+    reauthorize: yes
+
+# NOTE: ansible's docker_service module has a bug that when pull: yes
+#       and the image does not yet exist on the server ansible will throw up
+#       The bug is fixed in ansible 2.3 (not yet released)
+# TODO: Remove this task after upgrading to ansible 2.3
+# https://github.com/ansible/ansible-modules-core/pull/5159
+- name: Pull images
+  docker_image:
+    name: '{{ item.image }}'
+    tag: '{{ item.tag }}'
+  with_items: '{{ properties.images }}'

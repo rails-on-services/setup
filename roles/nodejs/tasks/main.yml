@@ -1,0 +1,19 @@
+---
+- name: Check if node is installed
+  shell: command -v node >/dev/null 2>&1
+  register: node
+  ignore_errors: yes
+  changed_when: false
+
+- name: 'Install on detected OS ({{ ansible_os_family }})'
+  include_tasks: '{{ ansible_os_family | lower }}.yml'
+  when: node.failed
+
+- name: Install npm packages
+  npm:
+    name: '{{ package }}'
+    global: yes
+  with_items: '{{ spec.packages }}'
+  loop_control:
+    loop_var: package
+  become: yes

@@ -1,0 +1,10 @@
+---
+- name: Install Node via Homebrew
+  homebrew:
+    # name: '{{ package }}'
+    name: [npm]
+    state: present
+  # with_items:
+  #   - npm
+  # loop_control:
+  #   loop_var: package
