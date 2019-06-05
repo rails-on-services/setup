@@ -11,8 +11,8 @@ echo $platform
 
 if [[ "$platform" == 'linux' ]]; then
 
-  sudo apt update
-  sudo apt install python-pip
+  sudo apt update --yes
+  sudo apt install python-pip --yes
   sudo pip install ansible
 
 elif [[ "$platform" == 'macos' ]]; then

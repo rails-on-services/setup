@@ -8,27 +8,39 @@ This setup has been tested with a Debian 9.9 Vagrant box. If you are running on 
 
 ### Vagrant Box
 
-Put this into a Vagrantfile
+Make a directory for the project on your local machine and place the Vagrantfile in the root of this reposiotry in that directory.
 
 ```bash
-Vagrant.configure("2") do |config|
-  config.vm.box = "debian/stretch64"
-  config.vm.network "forwarded_port", guest: 3000, host: 3000
-end
+mkdir dev
+cd dev
+curl https://raw.githubusercontent.com/rails-on-services/setup/master/Vagrantfile
 ```
 
-Start the box and connect to it:
+Make sure your ssh agent is running, bring up the vagrant box and connect to it
 
 ```bash
+ssh-add
 vagrant up
 vagrant ssh
 ```
+
+Verify that your ssh agent is installed
+
+```bash
+ssh-add -l
+```
+
+You should see output similar to the following:
+
+`2048 SHA256:NFiBekaQuGIwvS+t8VB2iHtAJGUx/skJlfJ6VTHPj80 /Users/roberto/.ssh/id_rsa (RSA)`
+
 
 ### Clone this repo and run setup
 
 This procedure will install ansible so it can be used to further configure the machine
 
 ```bash
+sudo apt install git --yes
 git clone https://github.com/rails-on-services/setup.git
 cd setup
 ./setup.sh
@@ -42,21 +54,15 @@ Use ansible to install Postgres, Redis, Node, Ruby, Docker, docker-compose, etc
 ./backend.yml
 ```
 
-If successful all the necessary services will have been installed and configured
+If successful all the necessary services will have been installed and configured.
+In order to run the ros-cli in development mode you need to source some environment value like so:
 
-## Manual Setup
+```bash
+source ~/.profile
+ros --version
+```
 
-This is basically an outline of what the ansible playbooks do:
-
-[]min reqs for local are docker and compose
-[]min reqs for console are pg and redis and ruby version of project
-
-Install Postgres, redis, docker, docker-compose, node and ruby via rbenv
-
-Clones the ros-cli repo
-Runs bundle install to install the CLI's dependencies
-Sets RUBYLIB to location of ros-cli/lib
-Adds ros-cli/exe directory to PATH
+If all is well you should see the current version of the ros CLI output
 
 ## Initialize an Existing Project
 
@@ -69,12 +75,30 @@ cd project_dir
 ros preflight:check
 ```
 
-All values of the preflight check should be true. If any are not then you can run `ros preflight:fix` to fix them
+All values of the preflight check should be 'ok'. If any are not then you can run `ros preflight:fix` to fix them
 
-After a successful preflight check you can run ros server with -b switch (build images) and -i switch (to initialize service databases)
+After a successful preflight check you can build the images.
 
 ```bash
-ros s -b -i
+ros build
+```
+
+After building you can run the database migrations for each service
+
+```bash
+ros db:reset:seed
+```
+
+And now, start the servers:
+
+```bash
+ros s
+```
+
+Display credentials:
+
+```bash
+ros credentials:show
 ```
 
 
@@ -83,3 +107,26 @@ ros s -b -i
 ```bash
 ros new name
 ```
+
+## Manual Setup
+
+This is basically an outline of what the ansible playbooks do:
+
+First, the ruby version of project must be installed on the machine. After that you need to:
+
+Clones the ros-cli repo
+Runs bundle install to install the CLI's dependencies
+Sets RUBYLIB to location of ros-cli/lib
+Adds ros-cli/exe directory to PATH
+
+### Run console mode
+
+Console mode is just running the services as independent rails applications. There are no services running.
+The minimum requirements for console mode are Postgres and Redis
+
+### Run local mode
+
+Local mode is running all the services as containers using docker-compose to manage them.
+The minimum requirements for local mode are docker and compose
+
+Install Postgres, redis, docker, docker-compose, node and ruby via rbenv

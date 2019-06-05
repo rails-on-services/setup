@@ -39,13 +39,11 @@
         name: git
       vars:
         role_spec:
-          # project_dir: '{{ ansible_env.HOME }}/project'
-          project_dir: ..
+          project_dir: "{{ lookup('pipe', 'pwd') }}/.."
           repositories:
             ros:
               url: https://github.com/rails-on-services/ros-cli.git
-            # devops:
-            #  url: https://github.com/rails-on-services/devops.git
+              name: ros-cli
             # guides:
             #  url: https://github.com/rails-on-services/guides.git
       # when: false
@@ -54,6 +52,4 @@
       import_role:
         name: instance
       vars:
-        project_dir: '{{ ansible_env.HOME }}'
-        # project_dir: ..
-      # when: false
+        project_dir: "{{ lookup('pipe', 'pwd') }}/.."
