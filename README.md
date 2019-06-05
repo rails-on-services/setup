@@ -55,20 +55,36 @@ Use ansible to install Postgres, Redis, Node, Ruby, Docker, docker-compose, etc
 ```
 
 If successful all the necessary services will have been installed and configured.
-In order to run the ros-cli in development mode you need to source some environment value like so:
+
+In order for your linux user to access docker you need to log out and log back in again.
+After logging out/in, confirm that the envrionment is setup properly.
 
 ```bash
-source ~/.profile
+docker ps
+```
+
+The output should be similar to below. Any error message indicates a misconfigured environment
+
+```bash
+CONTAINER ID        IMAGE                                        COMMAND                  CREATED             STATUS              PORTS 
+```
+
+Check that the ros cli is configured:
+
+```bash
 ros --version
 ```
 
 If all is well you should see the current version of the ros CLI output
 
+
 ## Initialize an Existing Project
 
-After cloning the project, first generate a local environment.
-After that, run the preflight check which reports if there is a valid environment for the platform.
-This includes whether the ros services repo exists at $PROJECT_HOME/ros
+Follow these steps
+
+1. Clone the project
+2. generate a local environment
+3. run the preflight check
 
 ```bash
 git clone your_project_url
@@ -77,19 +93,18 @@ ros g env local
 ros preflight:check
 ```
 
+The preflight check generates a report listing the state of platform requirements which includes whether the ros services repo exists at $PROJECT_HOME/ros.
 All values of the preflight check should be 'ok'. If any are not then you can run `ros preflight:fix` to fix them
-
-After a successful preflight check you can build and test a service
 
 ### Build and Initialize the IAM Service
 
-First, build the image
+After a successful preflight check build and test a single service. First, build the image:
 
 ```bash
 ros build iam
 ```
 
-After building the image, run the database migrations for the iam service
+After building the image, run the database migrations for the iam service:
 
 ```bash
 ros ros:db:reset:seed iam
@@ -148,6 +163,7 @@ Start all services
 
 ```bash
 ros up -d
+```
 
 You should see something similar to the following output:
 
