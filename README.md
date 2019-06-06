@@ -9,7 +9,7 @@ This setup has been tested with a Debian 9.9 Vagrant box. If you are running on 
 ### Setup Vagrant and VirtualBox
 
 Make sure you have Vagrant and VirtualBox on your machine by running `vagrant -v` and `VirtualBox --help`.
-If you don't have them, install it, below commands are installing it with `homebrew`:
+If you don't have them, install it, below commands for installing it with `homebrew`:
 
 ```bash
 brew cask install virtualbox
@@ -113,7 +113,16 @@ All values of the preflight check should be 'ok'. If any are not then you can ru
 
 ### Build and Initialize the IAM Service
 
-After a successful preflight check build and test a single service. First, build the image:
+After a successful preflight check build and test a single service. 
+
+First let's build `nginx` container 
+(should be done only once per configuration):
+
+```bash
+ros up -d nginx
+```
+
+Second, build `iam` image:
 
 ```bash
 ros build iam
@@ -144,7 +153,6 @@ ros up -d iam
 
 Verify the IAM Service is running:
 
-
 ```bash
 ros ps
 ```
@@ -163,6 +171,7 @@ whistler_iam_1          bundle exec rails server - ...   Up       0.0.0.0:32770-
 To build the rest of the service images:
 
 ```bash
+ros up -d nginx
 ros build
 ```
 
@@ -178,6 +187,12 @@ Start all services
 
 ```bash
 ros up -d
+```
+
+Verify the services are running:
+
+```bash
+ros ps
 ```
 
 You should see something similar to the following output:
