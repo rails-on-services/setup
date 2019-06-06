@@ -6,6 +6,16 @@ This setup has been tested with a Debian 9.9 Vagrant box. If you are running on 
 
 ## Automated Setup
 
+### Setup Vagrant and VirtualBox
+
+Make sure you have Vagrant and VirtualBox on your machine by running `vagrant -v` and `VirtualBox --help`.
+If you don't have them, install it, below commands are installing it with `homebrew`:
+
+```bash
+brew cask install virtualbox
+brew cask install vagrant
+``` 
+
 ### Vagrant Box
 
 Make a directory for the project on your local machine and place the Vagrantfile in the root of this reposiotry in that directory.
@@ -46,7 +56,7 @@ cd setup
 ./setup.sh
 ```
 
-### Install Platform Dependenices
+### Install Platform Dependencies
 
 Use ansible to install Postgres, Redis, Node, Ruby, Docker, docker-compose, etc
 
@@ -56,17 +66,22 @@ Use ansible to install Postgres, Redis, Node, Ruby, Docker, docker-compose, etc
 
 If successful all the necessary services will have been installed and configured.
 
-In order for your linux user to access docker you need to log out and log back in again.
-After logging out/in, confirm that the envrionment is setup properly.
+In order for your linux user to access docker you need to refresh you user's group membership. It can be done with this command:
+
+```bash
+exec sudo su -l $USER
+```
+
+Confirm that the environment is setup properly.
 
 ```bash
 docker ps
 ```
 
-The output should be similar to below. Any error message indicates a misconfigured environment
+Yuo should see an empty docker images list similar to below. Any error message indicates a misconfigured environment.
 
 ```bash
-CONTAINER ID        IMAGE                                        COMMAND                  CREATED             STATUS              PORTS 
+CONTAINER ID   IMAGE   COMMAND   CREATED   STATUS   PORTS 
 ```
 
 Check that the ros cli is configured:
