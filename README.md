@@ -6,6 +6,16 @@ This setup has been tested with a Debian 9.9 Vagrant box. If you are running on 
 
 ## Automated Setup
 
+### Setup Vagrant and VirtualBox
+
+Make sure you have Vagrant and VirtualBox on your machine by running `vagrant -v` and `VirtualBox --help`.
+If you don't have them, install it, below commands for installing it with `homebrew`:
+
+```bash
+brew cask install virtualbox
+brew cask install vagrant
+``` 
+
 ### Vagrant Box
 
 Make a directory for the project on your local machine and place the Vagrantfile in the root of this reposiotry in that directory.
@@ -46,7 +56,7 @@ cd setup
 ./setup.sh
 ```
 
-### Install Platform Dependenices
+### Install Platform Dependencies
 
 Use ansible to install Postgres, Redis, Node, Ruby, Docker, docker-compose, etc
 
@@ -56,17 +66,22 @@ Use ansible to install Postgres, Redis, Node, Ruby, Docker, docker-compose, etc
 
 If successful all the necessary services will have been installed and configured.
 
-In order for your linux user to access docker you need to log out and log back in again.
-After logging out/in, confirm that the envrionment is setup properly.
+In order for your linux user to access docker you need to refresh you user's group membership. It can be done with this command:
+
+```bash
+exec sudo su -l $USER
+```
+
+Confirm that the environment is setup properly.
 
 ```bash
 docker ps
 ```
 
-The output should be similar to below. Any error message indicates a misconfigured environment
+Yuo should see an empty docker images list similar to below. Any error message indicates a misconfigured environment.
 
 ```bash
-CONTAINER ID        IMAGE                                        COMMAND                  CREATED             STATUS              PORTS 
+CONTAINER ID   IMAGE   COMMAND   CREATED   STATUS   PORTS 
 ```
 
 Check that the ros cli is configured:
@@ -100,7 +115,16 @@ All values of the preflight check should be 'ok'. If any are not then you can ru
 
 ### Build and Initialize the IAM Service
 
-After a successful preflight check build and test a single service. First, build the image:
+After a successful preflight check build and test a single service. 
+
+First let's build `nginx` container 
+(should be done only once per configuration):
+
+```bash
+ros up -d nginx
+```
+
+Second, build `iam` image:
 
 ```bash
 ros build iam
@@ -131,7 +155,6 @@ ros up -d iam
 
 Verify the IAM Service is running:
 
-
 ```bash
 ros ps
 ```
@@ -150,6 +173,7 @@ whistler_iam_1          bundle exec rails server - ...   Up       0.0.0.0:32770-
 To build the rest of the service images:
 
 ```bash
+ros up -d nginx
 ros build
 ```
 
@@ -165,6 +189,12 @@ Start all services
 
 ```bash
 ros up nginx -d
+```
+
+Verify the services are running:
+
+```bash
+ros ps
 ```
 
 You should see something similar to the following output:
