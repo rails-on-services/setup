@@ -87,6 +87,8 @@ Follow these steps
 3. run the preflight check
 
 ```bash
+vagrant ssh
+cd dev
 git clone your_project_url
 cd project_dir
 ros g env local
@@ -162,7 +164,7 @@ ros ros:db:reset:seed
 Start all services
 
 ```bash
-ros up -d
+ros up nginx -d
 ```
 
 You should see something similar to the following output:
@@ -192,7 +194,7 @@ To test the connection to the IAM Service, first display the credentials:
 ros ros:iam:credentials:show
 ```
 
-Copy and paste the postman config for Admin-2 into Postman and set the server to `http://localhost:3000`
+Copy and paste the postman config for `Admin-2` into Postman and set the server to `http://localhost:3000`
 
 Then make a request to `http://localhost:3000/iam/users`
 
@@ -213,6 +215,28 @@ Clones the ros-cli repo
 Runs bundle install to install the CLI's dependencies
 Sets RUBYLIB to location of ros-cli/lib
 Adds ros-cli/exe directory to PATH
+
+# Services
+
+## Create a New Service
+
+```bash
+cd project_root
+ros g service service_name
+cd services/service_name
+rails ros:db:reset:seed
+rails g endpoint endpoint_name model_attributes
+```
+
+Exmaple create a reward service with a campaign model
+
+```bash
+ros g service reward
+cd services/reward
+rails ros:db:reset:seed
+rails g endpoint campaign name description properties:jsonb display_properties:jsonb
+```
+
 
 ### Run console mode
 
