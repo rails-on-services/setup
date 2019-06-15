@@ -51,8 +51,9 @@ This procedure will install ansible so it can be used to further configure the m
 
 ```bash
 sudo apt install git --yes
+cd ~/dev
 git clone https://github.com/rails-on-services/setup.git
-cd setup
+cd ~/dev/setup
 ./setup.sh
 ```
 
@@ -61,6 +62,7 @@ cd setup
 Use ansible to install Postgres, Redis, Node, Ruby, Docker, docker-compose, etc
 
 ```bash
+cd ~/dev/setup
 ./backend.yml
 ```
 
@@ -103,7 +105,7 @@ Follow these steps
 
 ```bash
 vagrant ssh
-cd dev
+cd ~/dev/
 git clone your_project_url
 cd project_dir
 ros g env local
