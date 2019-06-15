@@ -1,6 +1,6 @@
 Vagrant.configure('2') do |config|
 
-  required_plugins = %w(vagrant-persistent-storage)
+  required_plugins = %w(vagrant-persistent-storage vagrant-vbguest vagrant-disksize)
   _retry = false
   required_plugins.each do |plugin|
     unless Vagrant.has_plugin? plugin
@@ -53,6 +53,7 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.box = 'debian/contrib-stretch64'
+  config.disksize.size = "20GB"
   config.vm.box_version = '9.9.0'
   config.vm.network "forwarded_port", guest: 3000, host: 3000
   config.ssh.forward_agent = true
