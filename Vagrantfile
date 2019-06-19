@@ -1,4 +1,12 @@
 Vagrant.configure('2') do |config|
+  forward_ports = [
+    { name: 'sftp', guest: 2222, host: 2222, enabled: true },
+    { name: 'nginx', guest: 3000, host: 3000, enabled: true },
+    { name: 'jekyll', guest: 4000, host: 4000, enabled: true },
+    { name: 'angular', guest: 4200, host: 4200, enabled: true },
+    { name: 'localstack-ui', guest: 8080, host: 8080, enabled: true },
+    { name: 'live-reload', guest: 35729, host: 35729, enabled: true }
+  ]
 
   required_plugins = %w(vagrant-persistent-storage vagrant-vbguest vagrant-disksize)
   _retry = false
@@ -55,7 +63,10 @@ Vagrant.configure('2') do |config|
   config.vm.box = 'debian/contrib-stretch64'
   config.disksize.size = "20GB"
   config.vm.box_version = '9.9.0'
-  config.vm.network "forwarded_port", guest: 3000, host: 3000
+  forward_ports.each do |port|
+    next unless port[:enabled]
+    config.vm.network "forwarded_port", guest: port[:guest], host: port[:host]
+  end
   config.ssh.forward_agent = true
   config.vm.synced_folder '.', '/vagrant', disabled: true
   config.vm.synced_folder '.', '/home/vagrant/dev', type: 'nfs',

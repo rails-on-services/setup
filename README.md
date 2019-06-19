@@ -52,8 +52,10 @@ This procedure will install ansible so it can be used to further configure the m
 ```bash
 sudo apt install git --yes
 cd ~/dev
+mkdir ros
+cd ~/dev/ros
 git clone https://github.com/rails-on-services/setup.git
-cd ~/dev/setup
+cd ~/dev/ros/setup
 ./setup.sh
 ```
 
@@ -62,7 +64,7 @@ cd ~/dev/setup
 Use ansible to install Postgres, Redis, Node, Ruby, Docker, docker-compose, etc
 
 ```bash
-cd ~/dev/setup
+cd ~/dev/ros/setup
 ./backend.yml
 ```
 
@@ -105,7 +107,7 @@ Follow these steps
 
 ```bash
 vagrant ssh
-cd ~/dev/
+cd ~/dev
 git clone your_project_url
 cd project_dir
 ros g env local
@@ -230,6 +232,27 @@ Copy and paste the postman config for `Admin-2` into Postman and set the server 
 
 Then make a request to `http://localhost:3000/iam/users`
 
+
+## Install devops tools
+
+```bash
+cd ~/dev/ros/setup
+./devops.yml
+```
+
+This will install EKS authtenitcator, skaffold, vault, terraform, helm and kubectl
+
+## Launch Project into Kubernetes
+
+Before running these tasks make sure you have valid credentials in the VM at ~/.aws/credentials
+
+```bash
+cd ~/dev/project_name
+ros g env development
+ROS_ENV=development ros preflight:check
+ROS_ENV=development ros deployment:configure
+ROS_ENV=development ros deployment:provision
+```
 
 ## Create a New Project
 

@@ -1,0 +1,114 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: backend
+  tasks:
+    - name: include version vars
+      include_vars:
+        file: devops-vars.yml
+    - name: Download and install EKS authenticator
+      get_url:
+        url: 'https://amazon-eks.s3-us-west-2.amazonaws.com/{{ eks_authenticator }}/bin/linux/amd64/aws-iam-authenticator'
+        dest: /usr/local/bin/aws-iam-authenticator
+        mode: 0755
+      become: yes
+
+    - name: Download and install Skaffold
+      get_url:
+        url: 'https://storage.googleapis.com/skaffold/releases/{{ skaffold }}/skaffold-linux-amd64'
+        dest: /usr/local/bin/skaffold
+        mode: 0755
+      become: yes
+
+    - name: Check for vault
+      stat:
+        path: /usr/local/bin/vault
+      register: st
+    - name: Download hashicorp vault
+      get_url:
+        url: 'https://releases.hashicorp.com/vault/{{ vault }}/vault_{{ vault }}_linux_amd64.zip'
+        dest: /tmp
+      when: st.stat.exists == false
+    - name: Install hashicorp vault
+      unarchive:
+        src: '/tmp/vault_{{ vault }}_linux_amd64.zip'
+        dest: /usr/local/bin
+        remote_src: yes
+      become: yes
+      when: st.stat.exists == false
+
+    - name: Check for terraform
+      stat:
+        path: /usr/local/bin/terraform
+      register: st
+    - name: Download hashicorp terraform
+      get_url:
+        url: 'https://releases.hashicorp.com/terraform/{{ terraform }}/terraform_{{ terraform }}_linux_amd64.zip'
+        dest: /tmp
+      when: st.stat.exists == false
+    - name: Install hashicorp terraform
+      unarchive:
+        src: '/tmp/terraform_{{ terraform }}_linux_amd64.zip'
+        dest: /usr/local/bin
+        remote_src: yes
+      become: yes
+      when: st.stat.exists == false
+      # when: false
+
+    - name: Get Helm
+      unarchive:
+        src: 'https://storage.googleapis.com/kubernetes-helm/helm-{{ helm }}-linux.tar.gz'
+        dest: '{{ bin_dir }}'
+        remote_src: yes
+        creates: '{{ bin_dir }}/helm'
+        exclude: [LICENSE, README.md]
+      become: yes
+    
+    - name: Move binary to path
+      command: 'mv linux/helm {{ bin_dir }}'
+      args:
+        chdir: '{{ bin_dir }}'
+        creates: '{{ bin_dir }}/helm'
+      become: yes
+      # when: false
+    
+    - name: 'Remove linux'
+      file:
+        path: '{{ bin_dir }}/linux'
+        state: absent
+      become: yes
+      # when: false
+    
+    - name: Insert aliases
+      include_role:
+        name: aliases
+      vars:
+        aliases_marker: k8s-helm
+        aliases_block: |
+          source <(helm completion bash)
+      # when: false
+
+    - name: Add kubectl apt signing key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+      become: yes
+    - name: Add kubectl apt repo
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: kubernetes
+      become: yes
+    - name: Install kubectl
+      apt:
+        name: [kubectl]
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: Insert aliases
+      include_role:
+        name: aliases
+      vars:
+        aliases_marker: k8s-kubectl
+        aliases_block: |
+          source <(kubectl completion bash)
