@@ -8,7 +8,7 @@ Vagrant.configure('2') do |config|
     { name: 'live-reload', guest: 35729, host: 35729, enabled: true }
   ]
 
-  required_plugins = %w(vagrant-persistent-storage vagrant-vbguest vagrant-disksize)
+  required_plugins = %w(vagrant-persistent-storage vagrant-disksize)
   _retry = false
   required_plugins.each do |plugin|
     unless Vagrant.has_plugin? plugin
