@@ -8,7 +8,7 @@ Vagrant.configure('2') do |config|
     { name: 'live-reload', guest: 35729, host: 35729, enabled: true }
   ]
 
-  required_plugins = %w(vagrant-persistent-storage vagrant-disksize)
+  required_plugins = %w(vagrant-persistent-storage)
   _retry = false
   required_plugins.each do |plugin|
     unless Vagrant.has_plugin? plugin
@@ -61,8 +61,7 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.box = 'debian/contrib-stretch64'
-  config.disksize.size = "20GB"
-  config.vm.box_version = '9.9.0'
+  config.vm.box_version = '9.9.1'
   forward_ports.each do |port|
     next unless port[:enabled]
     config.vm.network "forwarded_port", guest: port[:guest], host: port[:host]
