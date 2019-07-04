@@ -21,16 +21,23 @@ brew cask install vagrant
 Make a directory for the project on your local machine and place the Vagrantfile in the root of this reposiotry in that directory.
 
 ```bash
-mkdir dev
-cd dev
+mkdir your-project-name
+cd your-project-name
 curl https://raw.githubusercontent.com/rails-on-services/setup/master/Vagrantfile > Vagrantfile
+```
+
+This directory will be shared between the host and the VM
+
+Bring up the vagrant box
+
+```bash
+vagrant up
 ```
 
 Make sure your ssh agent is running, bring up the vagrant box and connect to it
 
 ```bash
 ssh-add
-vagrant up
 vagrant ssh
 ```
 
@@ -44,6 +51,7 @@ You should see output similar to the following:
 
 `2048 SHA256:NFiBekaQuGIwvS+t8VB2iHtAJGUx/skJlfJ6VTHPj80 /Users/roberto/.ssh/id_rsa (RSA)`
 
+**All subsequent commands are executed in the VM**
 
 ### Clone this repo and run setup
 
@@ -233,43 +241,90 @@ Copy and paste the postman config for `Admin-2` into Postman and set the server 
 Then make a request to `http://localhost:3000/iam/users`
 
 
-## Install devops tools
+## Launch Project into Kubernetes
+
+The development and production environments are by default launched into a kubernetes cluster
+
+### Setup
+
+#### Install devops tools
+
+The required tools are awscli, EKS authtenitcator, skaffold, vault, terraform, helm and kubectl
+
+This ansible script will install them:
 
 ```bash
 cd ~/dev/ros/setup
 ./devops.yml
 ```
 
-This will install EKS authtenitcator, skaffold, vault, terraform, helm and kubectl
+Note you can change the version of each of the tools by editing `./devops-vars.yml`
 
-## Launch Project into Kubernetes
+
+#### Configure Credentials
+
+* Add your target cloud credentials. For AWS this is a file located at `~/.aws/credentials`
+
+* Add your docker credentials for your specific image repository. The file is located at `~/.docker/config.json`
+
+
+#### Setup authentication with the EKS Cluster
+
+See your AWS Kubernetes admininistrator for authentication details. It could be either of:
+
+```bash
+aws eks update-kubeconfig --name develop
+```
+
+```bash
+aws eks update-kubeconfig --name {{ cluster_name }} --role-arn arn:aws:iam::{{ aws_account_id }}:role/{{ aws_role_name }}
+```
+
+If the command succeeded you should see output similar to:
+
+```bash
+Added new context arn:aws:eks:{{ region }}:{{ aws_account_id }}:cluster/{{ cluster_name }} to /home/vagrant/.kube/config
+```
+
+#### Verify authentication with the EKS Cluster
+
+```bash
+kubectl cluster-info
+```
+
+If the command succeeded you should see output similar to:
+
+```bash
+Kubernetes master is running at https://DSFADS83KASDDF993KKADF99B1FE0CED.sk1.ap-southeast-1.eks.amazonaws.com
+CoreDNS is running at https://DSFADS83KASDDF993KKADF99B1FE0CED.sk1.ap-southeast-1.eks.amazonaws.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+```
+
+
+### Deploy Platform into Kubernetes Cluster
 
 Before running these tasks make sure you have valid credentials in the VM at ~/.aws/credentials
 
 ```bash
 cd ~/dev/project_name
-ros g env development
-ROS_ENV=development ros preflight:check
-ROS_ENV=development ros deployment:configure
-ROS_ENV=development ros deployment:provision
+ros g env development https://api.whistler.perxtech.org
+ROS_ENV=staging ros preflight:check
+ROS_ENV=staging ros deploy:setup
+ROS_ENV=staging ros deploy:apply:core
+ROS_ENV=staging ros deploy:apply:platform
 ```
 
 ## Create a New Project
 
 ```bash
 ros new name
+ros preflight:fix
+ros build
+ros ros:db:reset:seed
+ros ros:db:reset:seed cognito
+ros ros:iam:credentials:show
+ros up
+# ros deploy:apply:platform
 ```
-
-## Manual Setup
-
-This is basically an outline of what the ansible playbooks do:
-
-First, the ruby version of project must be installed on the machine. After that you need to:
-
-Clones the ros-cli repo
-Runs bundle install to install the CLI's dependencies
-Sets RUBYLIB to location of ros-cli/lib
-Adds ros-cli/exe directory to PATH
 
 # Services
 

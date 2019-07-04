@@ -60,6 +60,12 @@ Vagrant.configure('2') do |config|
     node.vm.network :private_network, ip: '192.168.0.4'
   end
 
+  config.vm.provision "build", type: "shell", privileged: true, inline: <<-SHELL
+    sudo apt install git --yes
+    git clone https://github.com/rails-on-services/setup.git ~/dev/ros/setup
+    ~/dev/ros/setup/setup.sh
+  SHELL
+
   config.vm.box = 'debian/contrib-stretch64'
   config.vm.box_version = '9.9.1'
   forward_ports.each do |port|

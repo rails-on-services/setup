@@ -1,0 +1,32 @@
+---
+- name: Install common and debian specific packages
+  apt:
+    name: '{{ spec.packages + spec.dist_packages }}'
+    state: present
+    update_cache: yes
+    cache_valid_time: '{{ spec.cache_valid_time }}'
+  become: yes
+
+- name: Set time zone
+  command: 'timedatectl set-timezone {{ spec.time_zone }}'
+  when: spec.time_zone is defined
+  become: yes
+
+- name: set locale
+  command: /usr/sbin/update-locale LANG={{locale}} LC_ALL={{locale}}
+  when: false
+
+- name: Create a 'wheel' group
+  group:
+    name: wheel
+    state: present
+  become: yes
+
+- name: Allow 'wheel' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+  become: yes

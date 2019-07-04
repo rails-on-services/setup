@@ -5,6 +5,18 @@
     - name: include version vars
       include_vars:
         file: devops-vars.yml
+
+    - name: Install awscli
+      pip:
+        name: awscli
+        state: present
+      become: yes
+
+    - name: Ensure the ~/.aws directory exists
+      file:
+        dest: '{{ ansible_env.HOME }}/.aws'
+        state: directory
+
     - name: Download and install EKS authenticator
       get_url:
         url: 'https://amazon-eks.s3-us-west-2.amazonaws.com/{{ eks_authenticator }}/bin/linux/amd64/aws-iam-authenticator'
@@ -56,7 +68,7 @@
 
     - name: Get Helm
       unarchive:
-        src: 'https://storage.googleapis.com/kubernetes-helm/helm-{{ helm }}-linux.tar.gz'
+        src: 'https://storage.googleapis.com/kubernetes-helm/helm-v{{ helm }}-linux-amd64.tar.gz'
         dest: '{{ bin_dir }}'
         remote_src: yes
         creates: '{{ bin_dir }}/helm'
@@ -64,19 +76,17 @@
       become: yes
     
     - name: Move binary to path
-      command: 'mv linux/helm {{ bin_dir }}'
+      command: 'mv linux-amd64/helm {{ bin_dir }}'
       args:
         chdir: '{{ bin_dir }}'
         creates: '{{ bin_dir }}/helm'
       become: yes
-      # when: false
     
     - name: 'Remove linux'
       file:
-        path: '{{ bin_dir }}/linux'
+        path: '{{ bin_dir }}/linux-amd64'
         state: absent
       become: yes
-      # when: false
     
     - name: Insert aliases
       include_role:
@@ -85,7 +95,6 @@
         aliases_marker: k8s-helm
         aliases_block: |
           source <(helm completion bash)
-      # when: false
 
     - name: Add kubectl apt signing key
       apt_key:

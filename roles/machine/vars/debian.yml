@@ -1,0 +1,22 @@
+---
+dist_spec:
+  dist_packages:
+    - apache2-utils
+    - curl
+    - dos2unix
+    - exuberant-ctags
+    - git
+    - ipcalc
+    - libcurl4-openssl-dev
+    - libreadline-dev
+    - libsqlite3-dev
+    - rake
+    - sqlite3
+    - tcpdump
+    - tmux
+    - unzip
+    - vim
+    - lsof
+    - ntp
+    - bash-completion
+    - sudo

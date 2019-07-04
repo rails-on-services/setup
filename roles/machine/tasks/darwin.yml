@@ -1,0 +1,22 @@
+---
+- name: Install common and mac specific packages
+  homebrew:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ spec.packages + spec.dist_packages }}'
+
+# NOTE: cask requires to become root, but not to run cask as root so don't use become: yes here
+- name: Install packages via cask
+  homebrew_cask:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ spec.cask_packages }}'
+
+- name: Copy in custom inputrc
+  copy:
+    src: inputrc
+    dest: '{{ ansible_env.HOME }}/.inputrc'
+    owner: '{{ ansible_env.USER }}'
+    group: staff
+    mode: 0644
+    force: no

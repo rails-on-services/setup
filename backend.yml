@@ -2,6 +2,11 @@
 ---
 - hosts: backend
   tasks:
+    - name: Install machine tools
+      import_role:
+        name: machine
+      vars: {}
+
     - name: Install and setup Docker
       import_role:
         name: docker

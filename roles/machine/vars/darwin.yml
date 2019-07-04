@@ -1,0 +1,6 @@
+---
+dist_spec:
+  dist_packages:
+    - gpg
+    - cask
+  cask_packages: []
