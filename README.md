@@ -316,9 +316,11 @@ ROS_ENV=staging ros deploy:apply:platform
 ## Create a New Project
 
 ```bash
-ros new name
+ros new project_name
+cd project_name
 ros preflight:fix
 ros build
+ros up postgres -d
 ros ros:db:reset:seed
 ros ros:db:reset:seed cognito
 ros ros:iam:credentials:show
