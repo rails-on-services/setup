@@ -90,7 +90,7 @@ Confirm that the environment is setup properly.
 docker ps
 ```
 
-Yuo should see an empty docker images list similar to below. Any error message indicates a misconfigured environment.
+You should see an empty docker images list similar to below. Any error message indicates a misconfigured environment.
 
 ```bash
 CONTAINER ID   IMAGE   COMMAND   CREATED   STATUS   PORTS 
@@ -110,15 +110,16 @@ If all is well you should see the current version of the ros CLI output
 Follow these steps
 
 1. Clone the project
-2. generate a local environment
-3. run the preflight check
+2. Generate a local environment
+3. Confirm project is configured properly
+4. Start the services in development mode
 
 ```bash
 vagrant ssh
 cd ~/dev
 git clone your_project_url
 cd project_dir
-ros g env local
+ros g env development
 ros preflight:check
 ```
 
@@ -129,24 +130,13 @@ All values of the preflight check should be 'ok'. If any are not then you can ru
 
 After a successful preflight check build and test a single service. 
 
-First let's build `nginx` container 
-(should be done only once per configuration):
-
 ```bash
-ros up -d nginx
+ros up -d iam
 ```
 
-Second, build `iam` image:
+This will pull and run multiple images, including postgres, redis, nginx and iam
 
-```bash
-ros build iam
-```
-
-After building the image, run the database migrations for the iam service:
-
-```bash
-ros ros:db:reset:seed iam
-```
+The database migrations will run automatically on the iam service on first boot
 
 Occationally on first migrations there is an error message like:
 
@@ -179,28 +169,12 @@ You should see something similar to the following output:
 whistler_iam_1          bundle exec rails server - ...   Up       0.0.0.0:32770->3000/tcp
 ```
 
-
 ### Build and Iniailize Remaining Services
 
 To build the rest of the service images:
 
 ```bash
-ros up -d nginx
-ros build
-```
-
-Initialize the service databases and see them with test data:
-
-```bash
-ros ros:db:reset:seed
-```
-
-### Bring up the Platform and Test Connection
-
-Start all services
-
-```bash
-ros up nginx -d
+ros up -d
 ```
 
 Verify the services are running:
@@ -233,12 +207,19 @@ whistler_wait_1         /wait                            Exit 0
 To test the connection to the IAM Service, first display the credentials:
 
 ```bash
-ros ros:iam:credentials:show
+ros r iam app:ros:iam:credentials:show
 ```
 
 Copy and paste the postman config for `Admin-2` into Postman and set the server to `http://localhost:3000`
 
 Then make a request to `http://localhost:3000/iam/users`
+
+
+### Miscellaneous
+
+```bash
+ros up iam --seed
+```
 
 
 ## Launch Project into Kubernetes
