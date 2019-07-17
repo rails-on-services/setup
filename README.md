@@ -233,7 +233,7 @@ whistler_wait_1         /wait                            Exit 0
 To test the connection to the IAM Service, first display the credentials:
 
 ```bash
-ros ros:iam:credentials:show
+ros r iam app:ros:iam:credentials:show
 ```
 
 Copy and paste the postman config for `Admin-2` into Postman and set the server to `http://localhost:3000`
