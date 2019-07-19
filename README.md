@@ -4,9 +4,9 @@ Ros environment has a number of dependencies. This repository of anisble roles e
 
 This setup has been tested with a Debian 9.9 Vagrant box. If you are running on Mac please note any issues 
 
-## Automated Setup
+## Virtual Machine Setup
 
-### Setup Vagrant and VirtualBox
+### Vagrant and VirtualBox Setup
 
 Make sure you have Vagrant and VirtualBox on your machine by running `vagrant -v` and `VirtualBox --help`.
 If you don't have them, install it, below commands for installing it with `homebrew`:
@@ -16,32 +16,36 @@ brew cask install virtualbox
 brew cask install vagrant
 ``` 
 
-### Vagrant Box
+### Project and VM Setup
 
-Make a directory for the project on your local machine and place the Vagrantfile in the root of this reposiotry in that directory.
+Make a directory for the project on your local machine and place the Vagrantfile in this directory:
 
 ```bash
-mkdir your-project-name
-cd your-project-name
+mkdir [project-name]
+cd [project-name]
 curl https://raw.githubusercontent.com/rails-on-services/setup/master/Vagrantfile > Vagrantfile
 ```
 
 This directory will be shared between the host and the VM
 
-Bring up the vagrant box
+Bring up the VM:
 
 ```bash
 vagrant up
 ```
 
-Make sure your ssh agent is running, bring up the vagrant box and connect to it
+Start your ssh agent and ssh to the VM:
 
 ```bash
 ssh-add
 vagrant ssh
 ```
 
-Verify that your ssh agent is installed
+**All subsequent commands are executed in the VM**
+
+### Verify VM Configuration
+
+Verify that your ssh agent is installed:
 
 ```bash
 ssh-add -l
@@ -51,40 +55,7 @@ You should see output similar to the following:
 
 `2048 SHA256:NFiBekaQuGIwvS+t8VB2iHtAJGUx/skJlfJ6VTHPj80 /Users/roberto/.ssh/id_rsa (RSA)`
 
-**All subsequent commands are executed in the VM**
-
-### Clone this repo and run setup
-
-This procedure will install ansible so it can be used to further configure the machine
-
-```bash
-sudo apt install git --yes
-cd ~/dev
-mkdir ros
-cd ~/dev/ros
-git clone https://github.com/rails-on-services/setup.git
-cd ~/dev/ros/setup
-./setup.sh
-```
-
-### Install Platform Dependencies
-
-Use ansible to install Postgres, Redis, Node, Ruby, Docker, docker-compose, etc
-
-```bash
-cd ~/dev/ros/setup
-./backend.yml
-```
-
-If successful all the necessary services will have been installed and configured.
-
-In order for your linux user to access docker you need to refresh you user's group membership. It can be done with this command:
-
-```bash
-exec sudo su -l $USER
-```
-
-Confirm that the environment is setup properly.
+Verify that docker is setup properly:
 
 ```bash
 docker ps
@@ -96,39 +67,52 @@ You should see an empty docker images list similar to below. Any error message i
 CONTAINER ID   IMAGE   COMMAND   CREATED   STATUS   PORTS 
 ```
 
-Check that the ros cli is configured:
+Verify that the ros cli is available:
 
 ```bash
-ros --version
+ros version
 ```
 
 If all is well you should see the current version of the ros CLI output
 
+If you get to this point without an error then the VM is ready to go!
 
-## Initialize an Existing Project
 
-Follow these steps
+## Working with an Existing Project
 
-1. Clone the project
-2. Generate a local environment
-3. Confirm project is configured properly
-4. Start the services in development mode
+**All commands are executed in the VM**
+
+### Initialize the Project
+
+Clone the project:
 
 ```bash
 vagrant ssh
-cd ~/dev
-git clone your_project_url
-cd project_dir
-ros g env development
-ros preflight:check
+cd [project-name]
+git clone [project-url]
+cd [project-dir]
 ```
 
+Generate a local environment:
+
+```bash
+ros g env development
+```
+
+Preflight the project
+
+```bash
+ros preflight
+```
+
+This command checks for dependencies and configures the environment if it has not already been configured
+
 The preflight check generates a report listing the state of platform requirements which includes whether the ros services repo exists at $PROJECT_HOME/ros.
-All values of the preflight check should be 'ok'. If any are not then you can run `ros preflight:fix` to fix them
+All values of the preflight check should be 'ok'
 
-### Build and Initialize the IAM Service
+### Build and Run the IAM Service
 
-After a successful preflight check build and test a single service. 
+After a successful preflight check, build and test a single service:
 
 ```bash
 ros up -d iam
@@ -147,13 +131,7 @@ PG::ConnectionBad: could not connect to server: Connection refused
         TCP/IP connections on port 5432?
 ```
 
-If you see this, just re-run the command. Sometimes the database container isn't ready
-
-Bring up the IAM Service:
-
-```bash
-ros up -d iam
-```
+If you see this, just re-run the command `ros up -d iam` Sometimes the database container isn't ready
 
 Verify the IAM Service is running:
 
@@ -164,12 +142,77 @@ ros ps
 You should see something similar to the following output:
 
 ```bash
-        Name                       Command               State                            Ports
+            Name                           Command               State                        Ports
 -----------------------------------------------------------------------------------------------------------------------
-whistler_iam_1          bundle exec rails server - ...   Up       0.0.0.0:32770->3000/tcp
+whistler_mounted_iam_1          bundle exec rails server - ...   Up       0.0.0.0:32770->3000/tcp
+whistler_mounted_localstack_1   docker-entrypoint.sh             Up       4567/tcp, 4568/tcp, 4569/tcp, 4570/tcp,
+                                                                          4571/tcp, 0.0.0.0:4572->4572/tcp, 4573/tcp,
+                                                                          0.0.0.0:4574->4574/tcp, 4575/tcp,
+                                                                          0.0.0.0:4576->4576/tcp, 4577/tcp, 4578/tcp,
+                                                                          4579/tcp, 4580/tcp, 4581/tcp, 4582/tcp,
+                                                                          4583/tcp, 4584/tcp, 4585/tcp, 4586/tcp,
+                                                                          4587/tcp, 4588/tcp, 4589/tcp, 4590/tcp,
+                                                                          4591/tcp, 4592/tcp, 4593/tcp, 4594/tcp,
+                                                                          4595/tcp, 4596/tcp, 4597/tcp, 8080/tcp
+whistler_mounted_nginx_1        nginx -g daemon off;             Up       0.0.0.0:3000->80/tcp
+whistler_mounted_postgres_1     docker-entrypoint.sh postgres    Up       0.0.0.0:32769->5432/tcp
+whistler_mounted_redis_1        docker-entrypoint.sh redis ...   Up       0.0.0.0:32768->6379/tcp
+whistler_mounted_wait_1         /wait                            Exit 0
 ```
 
-### Build and Iniailize Remaining Services
+### Test the IAM Console
+
+Connect to the serivce's rails console:
+
+```bash
+ros c iam
+```
+
+You should see something similar to the following output:
+
+```bash
+Loading development environment (Rails 6.0.0.rc1)
+
+Frame number: 0/16
+[1] [iam][development][public] pry(main)>
+```
+
+In the rails console type `st` (shortcut for switch-tenant). If the database was seeded correctly you should see output like below with two test tenants `111_111_111` and `222_222_222`
+
+```bash
+[1] [iam][development][public] pry(main)> st
+   (0.7ms)  SELECT "public"."tenants"."id", "public"."tenants"."schema_name", "public"."tenants"."name" FROM "public"."tenants" ORDER BY "public"."tenants"."id" ASC
+   1 111_111_111 Account
+   2 222_222_222 Account
+   [2] [iam][development][public] pry(main)>
+```
+
+Disconnect from the rails console
+
+```bash
+<ctrl>+d
+```
+
+### Test the IAM Server
+
+Display test credentials:
+
+```bash
+ros r iam app:ros:iam:credentials:show
+```
+
+Copy and paste the postman config for `Admin-2` into Postman and set that config as the current environment
+
+Set the request `Authorization` header to `{{authorization}}`
+
+Then make a request to `http://localhost:3000/iam/users`
+
+If it is working you will see results like:
+
+![Alt text](/assets/postman_iam.png?raw=true "Response from IAM Service")
+
+
+### Build and Iniailize the Remaining Services
 
 To build the rest of the service images:
 
@@ -202,23 +245,6 @@ whistler_nginx_1        nginx -g daemon off;             Up       0.0.0.0:3000->
 whistler_postgres_1     docker-entrypoint.sh postgres    Up       0.0.0.0:32768->5432/tcp
 whistler_redis_1        docker-entrypoint.sh redis ...   Up       0.0.0.0:32769->6379/tcp
 whistler_wait_1         /wait                            Exit 0
-```
-
-To test the connection to the IAM Service, first display the credentials:
-
-```bash
-ros r iam app:ros:iam:credentials:show
-```
-
-Copy and paste the postman config for `Admin-2` into Postman and set the server to `http://localhost:3000`
-
-Then make a request to `http://localhost:3000/iam/users`
-
-
-### Miscellaneous
-
-```bash
-ros up iam --seed
 ```
 
 
@@ -287,11 +313,9 @@ Before running these tasks make sure you have valid credentials in the VM at ~/.
 
 ```bash
 cd ~/dev/project_name
-ros g env development https://api.whistler.perxtech.org
-ROS_ENV=staging ros preflight:check
-ROS_ENV=staging ros deploy:setup
-ROS_ENV=staging ros deploy:apply:core
-ROS_ENV=staging ros deploy:apply:platform
+ros g env test https://api.whistler.perxtech.org
+ROS_ENV=test ros preflight
+ROS_ENV=test ros up
 ```
 
 ## Create a New Project
@@ -299,26 +323,21 @@ ROS_ENV=staging ros deploy:apply:platform
 ```bash
 ros new project_name
 cd project_name
-ros preflight:fix
-ros build
-ros up postgres -d
-ros ros:db:reset:seed
-ros ros:db:reset:seed cognito
-ros ros:iam:credentials:show
-ros up
-# ros deploy:apply:platform
+ros preflight
+ros up -d
+ros r iam app:ros:iam:credentials:show
 ```
 
-# Services
+## Services
 
-## Create a New Service
+### Create a New Service
 
 ```bash
 cd project_root
 ros g service service_name
 cd services/service_name
 rails ros:db:reset:seed
-rails g endpoint endpoint_name model_attributes
+rails g endpoint [endpoint_name] [*model_attributes]
 ```
 
 Exmaple create a reward service with a campaign model
@@ -330,15 +349,15 @@ rails ros:db:reset:seed
 rails g endpoint campaign name description properties:jsonb display_properties:jsonb
 ```
 
+## Miscellaneous
 
-### Run console mode
+```bash
+ros up iam --seed
+```
+
+
+
+## Run console mode
 
 Console mode is just running the services as independent rails applications. There are no services running.
 The minimum requirements for console mode are Postgres and Redis
-
-### Run local mode
-
-Local mode is running all the services as containers using docker-compose to manage them.
-The minimum requirements for local mode are docker and compose
-
-Install Postgres, redis, docker, docker-compose, node and ruby via rbenv

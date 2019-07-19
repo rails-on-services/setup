@@ -17,11 +17,11 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  exec "vagrant " + ARGV.join(' ') if (_retry)
+  exec "vagrant #{ARGV.join(' ')}" if (_retry)
 
   config.persistent_storage.enabled = true
   config.persistent_storage.use_lvm = false
-  config.persistent_storage.location = "./dockerhdd.vdi"
+  config.persistent_storage.location = './dockerhdd.vdi'
   config.persistent_storage.size = 20000
   config.persistent_storage.part_type_code = '83'
   config.persistent_storage.diskdevice = '/dev/sdb'
@@ -36,7 +36,7 @@ Vagrant.configure('2') do |config|
     # v.customize ['modifyvm', :id, '--nictype1', 'virtio']
     # v.customize ['modifyvm', :id, '--nic1', 'hostonly', '--nic2', 'nat']
 
-    host = RbConfig::CONFIG["host_os"]
+    host = RbConfig::CONFIG['host_os']
     if host =~ /darwin/ # OS X
       # sysctl returns bytes, convert to MB
       # allocate 1/4 (25%) of available physical memory to the VM
@@ -51,30 +51,33 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'ros' do |node|
+  project_name = Dir.pwd.split('/').last
+
+  config.vm.define project_name do |node|
     node.vm.provider :virtualbox do |v|
-      v.name = 'ros'
+      v.name = project_name
     end
-    node.vm.hostname = 'ros.local'
+    node.vm.hostname = "#{project_name}.local"
     # node.vm.network :private_network, type: :dhcp
     node.vm.network :private_network, ip: '192.168.0.4'
   end
-
-  config.vm.provision "build", type: "shell", privileged: true, inline: <<-SHELL
-    sudo apt install git --yes
-    git clone https://github.com/rails-on-services/setup.git ~/dev/ros/setup
-    ~/dev/ros/setup/setup.sh
-  SHELL
 
   config.vm.box = 'debian/contrib-stretch64'
   config.vm.box_version = '9.9.1'
   forward_ports.each do |port|
     next unless port[:enabled]
-    config.vm.network "forwarded_port", guest: port[:guest], host: port[:host]
+    config.vm.network 'forwarded_port', guest: port[:guest], host: port[:host]
   end
   config.ssh.forward_agent = true
   config.vm.synced_folder '.', '/vagrant', disabled: true
-  config.vm.synced_folder '.', '/home/vagrant/dev', type: 'nfs',
+  config.vm.synced_folder '.', "/home/vagrant/#{project_name}", type: 'nfs',
     mount_options: ['rw', 'vers=3', 'tcp'],
     linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
+
+  config.vm.provision 'build', type: 'shell', privileged: false, inline: <<-SHELL
+    sudo apt install git --yes
+    git clone https://github.com/rails-on-services/setup.git ~/#{project_name}/ros/setup
+    ~/#{project_name}/ros/setup/setup.sh
+    cd ~/#{project_name}/ros/setup && ./backend.yml
+  SHELL
 end
