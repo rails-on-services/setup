@@ -79,5 +79,6 @@ Vagrant.configure('2') do |config|
     git clone https://github.com/rails-on-services/setup.git ~/#{project_name}/ros/setup
     ~/#{project_name}/ros/setup/setup.sh
     cd ~/#{project_name}/ros/setup && ./backend.yml
+    cd ~/#{project_name}/ros/setup && ./devops.yml
   SHELL
 end

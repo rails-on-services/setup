@@ -1,15 +1,16 @@
-# setup
+A Ros project has a lot of moving parts.
+To save time on setup, we recommend working in a virtual machine environment for development.
+This repository, which consists of a vagrant config, setup scripts and anisble roles, sets up that environment.
 
-Ros environment has a number of dependencies. This repository of anisble roles exists to make setting up the environment easier, quicker and more productive
-
-This setup has been tested with a Debian 9.9 Vagrant box. If you are running on Mac please note any issues 
+This setup has been tested with a Debian 9.9.1 Vagrant box.
+If you run these scripts on a Mac and encouter a problem or anything here doesn't work as expected plese create a GH issue
 
 ## Virtual Machine Setup
 
 ### Vagrant and VirtualBox Setup
 
 Make sure you have Vagrant and VirtualBox on your machine by running `vagrant -v` and `VirtualBox --help`.
-If you don't have them, install it, below commands for installing it with `homebrew`:
+If you don't have them, to install on Mac, use the following commands to install them with `homebrew`:
 
 ```bash
 brew cask install virtualbox
@@ -18,36 +19,33 @@ brew cask install vagrant
 
 ### Project and VM Setup
 
-Make a directory for the project on your local machine and place the Vagrantfile in this directory:
+Make a directory for the project on your local machine:
 
 ```bash
 mkdir [project-name]
 cd [project-name]
-curl https://raw.githubusercontent.com/rails-on-services/setup/master/Vagrantfile > Vagrantfile
 ```
 
 This directory will be shared between the host and the VM
 
-Bring up the VM:
-
-```bash
-vagrant up
-```
-
-Start your ssh agent and ssh to the VM:
+Start your ssh agent, download the Vagrantfile and bring up the VM:
 
 ```bash
 ssh-add
-vagrant ssh
+curl https://raw.githubusercontent.com/rails-on-services/setup/master/Vagrantfile > Vagrantfile
+vagrant up
 ```
 
-**All subsequent commands are executed in the VM**
+NOTE: It is required to have your ssh agent running or have a copy of your ssh private key installed into the VM
 
 ### Verify VM Configuration
 
-Verify that your ssh agent is installed:
+**All subsequent commands are executed in the VM**
+
+ssh to the VM and verify that your ssh agent is running:
 
 ```bash
+vagrant ssh
 ssh-add -l
 ```
 
@@ -84,7 +82,7 @@ If you get to this point without an error then the VM is ready to go!
 
 ### Initialize the Project
 
-Clone the project:
+Clone your project:
 
 ```bash
 vagrant ssh
@@ -93,22 +91,22 @@ git clone [project-url]
 cd [project-dir]
 ```
 
-Generate a local environment:
-
-```bash
-ros g env development
-```
-
-Preflight the project
+Preflight the project:
 
 ```bash
 ros preflight
 ```
 
-This command checks for dependencies and configures the environment if it has not already been configured
+This command checks dependencies and configures the environment as required.
+It also outputs a list the state of platform requirements.
+All values of the preflight should be 'ok' as shown here:
 
-The preflight check generates a report listing the state of platform requirements which includes whether the ros services repo exists at $PROJECT_HOME/ros.
-All values of the preflight check should be 'ok'
+```bash
+vagrant@perx:~/perx/whistler-services$ ros preflight
+ros repo: ok
+environment configuration: ok
+```
+
 
 ### Build and Run the IAM Service
 
@@ -201,7 +199,16 @@ Display test credentials:
 ros r iam app:ros:iam:credentials:show
 ```
 
-Copy and paste the postman config for `Admin-2` into Postman and set that config as the current environment
+The last few lines of output will look similar to this:
+
+```bash
+Postman
+{"name":"perx-111_111_111-root@platform.com","values":[{"key":"authorization","value":"Basic AQWSWVCYDIJTPTXTRSOB:9lTjpllDMOoMpnoMER-MZn1WgIJRZg51pxuuxoevhqkTUVy0pgy7Yg"},{"key":"email","value":"root@platform.com"},{"key":"password","value":"asdfjkl;"}]}
+{"name":"perx-222_222_222-root@client2.com","values":[{"key":"authorization","value":"Basic AILYAAOFSENGTRDGHWPB:XEwMWjUilEmigzkcxINOSZiqW0Qhbe4BnmPPa0xPmM6_MnnpZKwlUw"},{"key":"email","value":"root@client2.com"},{"key":"password","value":"asdfjkl;"}]}
+{"name":"perx-222_222_222-Admin_2","values":[{"key":"authorization","value":"Basic ACJGJSHLMQGKLHFQIAGB:o2U1Z1bOehqEHiiH-jh9Z6EGwUS2tNdm2KRUNjqNDcq_8f8iiV4f0g"},{"key":"username","value":"Admin_2"},{"key":"password","value":"asdfjkl;"}]}
+```
+
+Copy and the last line of the postman config for `Admin-2` and import it into Postman and set that config as the current environment
 
 Set the request `Authorization` header to `{{authorization}}`
 
@@ -248,9 +255,9 @@ whistler_wait_1         /wait                            Exit 0
 ```
 
 
-## Launch Project into Kubernetes
+## Deploy Project into Kubernetes
 
-The development and production environments are by default launched into a kubernetes cluster
+The test and production environments default configuration are to deploy the project into a Kubernetes cluster
 
 ### Setup
 
@@ -258,15 +265,14 @@ The development and production environments are by default launched into a kuber
 
 The required tools are awscli, EKS authtenitcator, skaffold, vault, terraform, helm and kubectl
 
-This ansible script will install them:
+These tools should already be installed on the VM, but you can re-install them by running this ansible script:
+
+NOTE: You can change the version of each of the tools by editing `./devops-vars.yml` before running the below commands
 
 ```bash
-cd ~/dev/ros/setup
+cd ~/[project-name]/ros/setup
 ./devops.yml
 ```
-
-Note you can change the version of each of the tools by editing `./devops-vars.yml`
-
 
 #### Configure Credentials
 
@@ -318,6 +324,8 @@ ROS_ENV=test ros preflight
 ROS_ENV=test ros up
 ```
 
+That's it. Your mircoservices project is now running in Kubernetes!
+
 ## Create a New Project
 
 ```bash
@@ -354,7 +362,6 @@ rails g endpoint campaign name description properties:jsonb display_properties:j
 ```bash
 ros up iam --seed
 ```
-
 
 
 ## Run console mode
