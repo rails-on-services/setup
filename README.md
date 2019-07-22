@@ -73,7 +73,7 @@ ros version
 
 If all is well you should see the current version of the ros CLI output
 
-If you get to this point without an error then the VM is ready to go!
+The VM is now ready to go. Let's get started!
 
 
 ## Working with an Existing Project
@@ -102,7 +102,7 @@ It also outputs a list the state of platform requirements.
 All values of the preflight should be 'ok' as shown here:
 
 ```bash
-vagrant@perx:~/perx/whistler-services$ ros preflight
+vagrant@perx:~/perx/whistler$ ros preflight
 ros repo: ok
 environment configuration: ok
 ```
@@ -271,18 +271,23 @@ The default configurations for test and production environments are to deploy th
 
 #### EKS Cluster Authentication
 
-See your AWS Kubernetes admininistrator for authentication details. It could be either short or long form. Long form
-adds `--role-arn arn:aws:iam::{{ aws_account_id }}:role/{{ aws_role_name }}` to the basic command `aws eks update-kubeconfig --name {{ cluster_name }}`
+See your AWS Kubernetes admininistrator for authentication details.
 
-For short form:
+It could be either short form: `aws eks update-kubeconfig --name {{ cluster_name }}`
+
+Or the long form, which adds `--role-arn arn:aws:iam::{{ aws_account_id }}:role/{{ aws_role_name }}` to the command
+
+To run the short form:
 
 ```bash
+cd [project-name]/[project-dir]
 ROS_ENV=test ros init
 ```
 
-For long form add the `-l` switch:
+To run the long form add the `-l` switch:
 
 ```bash
+cd [project-name]/[project-dir]
 ROS_ENV=test ros init -l
 ```
 
@@ -298,13 +303,16 @@ CoreDNS is running at https://DSFADS83KASDDF993KKADF99B1FE0CED.sk1.ap-southeast-
 Before running these tasks make sure you have valid credentials in the VM at ~/.aws/credentials
 
 ```bash
-cd ~/dev/project_name
-ros g env test https://api.whistler.perxtech.org
+cd [project-name]/[project-dir]
+ros g env test
 ROS_ENV=test ros preflight
 ROS_ENV=test ros up
 ```
 
-That's it. Your mircoservices project is now running in Kubernetes!
+**Your mircoservices project is now running in Kubernetes!**
+
+Follow the [steps](#test-the-iam-server) for testing the IAM server at the endpoint displayed after running `ROS_ENV=test ros up`
+
 
 ## Create a New Project
 
