@@ -29,11 +29,11 @@ Vagrant.configure('2') do |config|
   config.persistent_storage.mountpoint = '/var/lib/docker'
 
   config.vm.provider :virtualbox do |v|
-    # vb.customize ['modifyhd', 'disk id', '--resize', '30000']
+    # v.customize ['modifyhd', 'disk id', '--resize', '30000']
     # v.memory = 2048
     # v.cpus = 1
-    # v.customize ['guestproperty', 'set', :id, '/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold', 10000 ]
     # v.customize ['modifyvm', :id, '--nictype1', 'virtio']
+    v.customize ['guestproperty', 'set', :id, '/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold', 10000 ]
     # v.customize ['modifyvm', :id, '--nic1', 'hostonly', '--nic2', 'nat']
 
     host = RbConfig::CONFIG['host_os']

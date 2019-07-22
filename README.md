@@ -7,7 +7,7 @@ If you run these scripts on a Mac and encouter a problem or anything here doesn'
 
 ## Virtual Machine Setup
 
-### Vagrant and VirtualBox Setup
+### Setup Vagrant and VirtualBox
 
 Make sure you have Vagrant and VirtualBox on your machine by running `vagrant -v` and `VirtualBox --help`.
 If you don't have them, to install on Mac, use the following commands to install them with `homebrew`:
@@ -17,7 +17,7 @@ brew cask install virtualbox
 brew cask install vagrant
 ``` 
 
-### Project and VM Setup
+### Setup Project and VM
 
 Make a directory for the project on your local machine:
 
@@ -208,18 +208,20 @@ Postman
 {"name":"perx-222_222_222-Admin_2","values":[{"key":"authorization","value":"Basic ACJGJSHLMQGKLHFQIAGB:o2U1Z1bOehqEHiiH-jh9Z6EGwUS2tNdm2KRUNjqNDcq_8f8iiV4f0g"},{"key":"username","value":"Admin_2"},{"key":"password","value":"asdfjkl;"}]}
 ```
 
-Copy and the last line of the postman config for `Admin-2` and import it into Postman and set that config as the current environment
+Copy the last line of the postman config for `Admin-2` and import it into Postman
+
+Set the imported config as the current environment
 
 Set the request `Authorization` header to `{{authorization}}`
 
 Then make a request to `http://localhost:3000/iam/users`
 
-If it is working you will see results like:
+If it is working you will see results like this:
 
 ![Alt text](/assets/postman_iam.png?raw=true "Response from IAM Service")
 
 
-### Build and Iniailize the Remaining Services
+### Build and Run the Remaining Services
 
 To build the rest of the service images:
 
@@ -254,55 +256,34 @@ whistler_redis_1        docker-entrypoint.sh redis ...   Up       0.0.0.0:32769-
 whistler_wait_1         /wait                            Exit 0
 ```
 
-
 ## Deploy Project into Kubernetes
 
-The test and production environments default configuration are to deploy the project into a Kubernetes cluster
+The default configurations for test and production environments are to deploy the project into a Kubernetes cluster
 
 ### Setup
 
-#### Install devops tools
-
-The required tools are awscli, EKS authtenitcator, skaffold, vault, terraform, helm and kubectl
-
-These tools should already be installed on the VM, but you can re-install them by running this ansible script:
-
-NOTE: You can change the version of each of the tools by editing `./devops-vars.yml` before running the below commands
-
-```bash
-cd ~/[project-name]/ros/setup
-./devops.yml
-```
-
-#### Configure Credentials
+#### Credentials
 
 * Add your target cloud credentials. For AWS this is a file located at `~/.aws/credentials`
 
 * Add your docker credentials for your specific image repository. The file is located at `~/.docker/config.json`
 
 
-#### Setup authentication with the EKS Cluster
+#### EKS Cluster Authentication
 
-See your AWS Kubernetes admininistrator for authentication details. It could be either of:
+See your AWS Kubernetes admininistrator for authentication details. It could be either short or long form. Long form
+adds `--role-arn arn:aws:iam::{{ aws_account_id }}:role/{{ aws_role_name }}` to the basic command `aws eks update-kubeconfig --name {{ cluster_name }}`
+
+For short form:
 
 ```bash
-aws eks update-kubeconfig --name develop
+ROS_ENV=test ros init
 ```
 
-```bash
-aws eks update-kubeconfig --name {{ cluster_name }} --role-arn arn:aws:iam::{{ aws_account_id }}:role/{{ aws_role_name }}
-```
-
-If the command succeeded you should see output similar to:
+For long form add the `-l` switch:
 
 ```bash
-Added new context arn:aws:eks:{{ region }}:{{ aws_account_id }}:cluster/{{ cluster_name }} to /home/vagrant/.kube/config
-```
-
-#### Verify authentication with the EKS Cluster
-
-```bash
-kubectl cluster-info
+ROS_ENV=test ros init -l
 ```
 
 If the command succeeded you should see output similar to:
@@ -312,8 +293,7 @@ Kubernetes master is running at https://DSFADS83KASDDF993KKADF99B1FE0CED.sk1.ap-
 CoreDNS is running at https://DSFADS83KASDDF993KKADF99B1FE0CED.sk1.ap-southeast-1.eks.amazonaws.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 ```
 
-
-### Deploy Platform into Kubernetes Cluster
+### Deploy
 
 Before running these tasks make sure you have valid credentials in the VM at ~/.aws/credentials
 
@@ -361,6 +341,21 @@ rails g endpoint campaign name description properties:jsonb display_properties:j
 
 ```bash
 ros up iam --seed
+```
+
+### Configuration with Kubernetes
+
+#### Install devops tools
+
+The required tools are awscli, EKS authtenitcator, skaffold, vault, terraform, helm and kubectl
+
+These tools are already installed on the VM, but you can re-install them by running the `devops.yml` ansible script.
+
+NOTE: You can change the version of each of the tools by editing `./devops-vars.yml` before running the below commands
+
+```bash
+cd ~/[project-name]/ros/setup
+./devops.yml
 ```
 
 

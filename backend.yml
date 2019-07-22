@@ -2,6 +2,10 @@
 ---
 - hosts: backend
   tasks:
+    - name: include version vars
+      include_vars:
+        file: backend-vars.yml
+
     - name: Install machine tools
       import_role:
         name: machine
@@ -30,16 +34,19 @@
     - name: Install ruby
       import_role:
         name: ruby
-      vars: {}
+      vars:
+        role_spec:
+          versions: '{{ ruby_versions }}'
 
-    - name: Install node and postman package
+    - name: Install node and requested node packages
       import_role:
         name: nodejs
       vars:
         role_spec:
-          packages: [openapi-to-postmanv2]
+          version: '{{ node_version }}'
+          packages: '{{ node_packages }}'
 
-    - name: Clone the projects
+    - name: Clone ros projects
       import_role:
         name: git
       vars:
@@ -55,7 +62,6 @@
               url: https://github.com/rails-on-services/setup.git
             images:
               url: https://github.com/rails-on-services/images.git
-      # when: false
 
     - name: Configure instance
       import_role:

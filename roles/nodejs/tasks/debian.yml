@@ -6,7 +6,7 @@
   become: yes
 
 - name: Add repository
-  shell: "curl -sL https://deb.nodesource.com/setup_11.x | bash -"
+  shell: "curl -sL https://deb.nodesource.com/setup_{{ spec.version }} | bash -"
   args:
     warn: no
   become: yes
