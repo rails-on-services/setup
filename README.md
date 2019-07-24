@@ -7,10 +7,10 @@ If you run these scripts on a Mac and encouter a problem or anything here doesn'
 
 ## Virtual Machine Setup
 
-### Setup Vagrant and VirtualBox
+### Setup Vagrant and VirtualBox on MacOS
 
 Make sure you have Vagrant and VirtualBox on your machine by running `vagrant -v` and `VirtualBox --help`.
-If you don't have them, to install on Mac, use the following commands to install them with `homebrew`:
+If you don't have them, use the following commands to install them with `homebrew`:
 
 ```bash
 brew cask install virtualbox
@@ -38,7 +38,11 @@ vagrant up
 
 NOTE: It is required to have your ssh agent running or have a copy of your ssh private key installed into the VM
 
-### Verify VM Configuration
+### Setup Vagrant and VirtualBox on Windows
+
+TODO
+
+## Verify VM Configuration
 
 **All subsequent commands are executed in the VM**
 
@@ -294,8 +298,13 @@ ROS_ENV=test ros init -l
 If the command succeeded you should see output similar to:
 
 ```bash
+aws eks update-kubeconfig --name develop --role-arn arn:aws:iam::814127428874:role/eks-admin
+Added new context arn:aws:eks:ap-southeast-1:978123428748:cluster/develop to /home/vagrant/.kube/config
+kubectl cluster-info
 Kubernetes master is running at https://DSFADS83KASDDF993KKADF99B1FE0CED.sk1.ap-southeast-1.eks.amazonaws.com
 CoreDNS is running at https://DSFADS83KASDDF993KKADF99B1FE0CED.sk1.ap-southeast-1.eks.amazonaws.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
 ### Deploy
