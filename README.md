@@ -98,7 +98,7 @@ cd [project-dir]
 Preflight the project:
 
 ```bash
-ros preflight
+ros be preflight
 ```
 
 This command checks dependencies and configures the environment as required.
@@ -106,7 +106,7 @@ It also outputs a list the state of platform requirements.
 All values of the preflight should be 'ok' as shown here:
 
 ```bash
-vagrant@perx:~/perx/whistler$ ros preflight
+vagrant@perx:~/perx/whistler$ ros be preflight
 ros repo: ok
 environment configuration: ok
 ```
@@ -117,7 +117,7 @@ environment configuration: ok
 After a successful preflight check, build and test a single service:
 
 ```bash
-ros up -d iam
+ros be up -d iam
 ```
 
 This will pull and run multiple images, including postgres, redis, nginx and iam
@@ -133,12 +133,12 @@ PG::ConnectionBad: could not connect to server: Connection refused
         TCP/IP connections on port 5432?
 ```
 
-If you see this, just re-run the command `ros up -d iam` Sometimes the database container isn't ready
+If you see this, just re-run the command `ros be up -d iam` Sometimes the database container isn't ready
 
 Verify the IAM Service is running:
 
 ```bash
-ros ps
+ros be ps
 ```
 
 You should see something similar to the following output:
@@ -167,7 +167,7 @@ whistler_mounted_wait_1         /wait                            Exit 0
 Connect to the serivce's rails console:
 
 ```bash
-ros c iam
+ros be c iam
 ```
 
 You should see something similar to the following output:
@@ -200,7 +200,7 @@ Disconnect from the rails console
 Display test credentials:
 
 ```bash
-ros r iam app:ros:iam:credentials:show
+ros be r iam app:ros:iam:credentials:show
 ```
 
 The last few lines of output will look similar to this:
@@ -230,13 +230,13 @@ If it is working you will see results like this:
 To build the rest of the service images:
 
 ```bash
-ros up -d
+ros be up -d
 ```
 
 Verify the services are running:
 
 ```bash
-ros ps
+ros be ps
 ```
 
 You should see something similar to the following output:
@@ -285,14 +285,14 @@ To run the short form:
 
 ```bash
 cd [project-name]/[project-dir]
-ROS_ENV=test ros init
+ROS_ENV=test ros be init
 ```
 
 To run the long form add the `-l` switch:
 
 ```bash
 cd [project-name]/[project-dir]
-ROS_ENV=test ros init -l
+ROS_ENV=test ros be init -l
 ```
 
 If the command succeeded you should see output similar to:
@@ -313,9 +313,9 @@ Before running these tasks make sure you have valid credentials in the VM at ~/.
 
 ```bash
 cd [project-name]/[project-dir]
-ros g env test
-ROS_ENV=test ros preflight
-ROS_ENV=test ros up
+ros be g env test
+ROS_ENV=test ros be preflight
+ROS_ENV=test ros be up
 ```
 
 **Your mircoservices project is now running in Kubernetes!**
@@ -328,9 +328,9 @@ Follow the [steps](#test-the-iam-server) for testing the IAM server at the endpo
 ```bash
 ros new project_name
 cd project_name
-ros preflight
-ros up -d
-ros r iam app:ros:iam:credentials:show
+ros be preflight
+ros be up -d
+ros be r iam app:ros:iam:credentials:show
 ```
 
 ## Services
@@ -339,7 +339,7 @@ ros r iam app:ros:iam:credentials:show
 
 ```bash
 cd project_root
-ros g service service_name
+ros be g service service_name
 cd services/service_name
 rails ros:db:reset:seed
 rails g endpoint [endpoint_name] [*model_attributes]
@@ -348,7 +348,7 @@ rails g endpoint [endpoint_name] [*model_attributes]
 Exmaple create a reward service with a campaign model
 
 ```bash
-ros g service reward
+ros be g service reward
 cd services/reward
 rails ros:db:reset:seed
 rails g endpoint campaign name description properties:jsonb display_properties:jsonb
@@ -357,7 +357,7 @@ rails g endpoint campaign name description properties:jsonb display_properties:j
 ## Miscellaneous
 
 ```bash
-ros up iam --seed
+ros be up iam --seed
 ```
 
 ### Configuration with Kubernetes
