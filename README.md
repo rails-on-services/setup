@@ -95,18 +95,18 @@ git clone [project-url]
 cd [project-dir]
 ```
 
-Preflight the project:
+Initialize the project:
 
 ```bash
-ros be preflight
+ros be init
 ```
 
 This command checks dependencies and configures the environment as required.
 It also outputs a list the state of platform requirements.
-All values of the preflight should be 'ok' as shown here:
+All values of the output should be 'ok' as shown here:
 
 ```bash
-vagrant@perx:~/perx/whistler$ ros be preflight
+vagrant@perx:~/perx/whistler$ ros be init
 ros repo: ok
 environment configuration: ok
 ```
@@ -114,7 +114,7 @@ environment configuration: ok
 
 ### Build and Run the IAM Service
 
-After a successful preflight check, build and test a single service:
+After a successful initialization, build and test a single service:
 
 ```bash
 ros be up -d iam
@@ -154,7 +154,7 @@ ros_secret_access_key=yGoJ_01ngtEga4RvsBSm3YPEGAo22hqa94IMwlnuLaDioKFLKhtjhA
 
 
 Platform Services    Status                   Core Services        Status                   Infra Services       Status
-------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------
                                               account              Not Enabled              fluentd              Not Enabled
                                               billing              Not Enabled              localstack           Running
                                               cognito              Stopped                  nginx                Running
@@ -162,7 +162,7 @@ Platform Services    Status                   Core Services        Status       
                                               iam                  Running                  redis                Running
                                               storage              Stopped                  sftp                 Stopped
 
-*** Services available at https://api.ros.perxtech.org ***
+*** Services available at https://api.ros.rails-on-services.org ***
 *** API Docs available at [TO IMPLEMENT] ***
 ```
 
@@ -193,8 +193,6 @@ You should see something similar to the following output:
 ```bash
 Loading development environment (Rails 6.0.0.rc1)
 
-Loading development environment (Rails 6.0.0.rc1)
-
 Frame number: 0/22
 
 Model Shortcut Console Commands:
@@ -209,8 +207,6 @@ UserGroup           ug     uga     ugc     ugf     ugl     ugp
 
 Type `help ros` for additional console commands
 
-
-Frame number: 0/16
 [1] [iam][development][public] pry(main)>
 ```
 
@@ -244,10 +240,10 @@ ros be credentials
 The first few lines of output will look similar to this:
 
 ```bash
-Postman
-{"name":"perx-111_111_111-root@platform.com","values":[{"key":"authorization","value":"Basic AQWSWVCYDIJTPTXTRSOB:9lTjpllDMOoMpnoMER-MZn1WgIJRZg51pxuuxoevhqkTUVy0pgy7Yg"},{"key":"email","value":"root@platform.com"},{"key":"password","value":"asdfjkl;"}]}
-{"name":"perx-222_222_222-root@client2.com","values":[{"key":"authorization","value":"Basic AILYAAOFSENGTRDGHWPB:XEwMWjUilEmigzkcxINOSZiqW0Qhbe4BnmPPa0xPmM6_MnnpZKwlUw"},{"key":"email","value":"root@client2.com"},{"key":"password","value":"asdfjkl;"}]}
-{"name":"perx-222_222_222-Admin_2","values":[{"key":"authorization","value":"Basic ACJGJSHLMQGKLHFQIAGB:o2U1Z1bOehqEHiiH-jh9Z6EGwUS2tNdm2KRUNjqNDcq_8f8iiV4f0g"},{"key":"username","value":"Admin_2"},{"key":"password","value":"asdfjkl;"}]}
+Postman:
+{"name"=>"111111111-root", "values"=>[{"key"=>"authorization", "value"=>"Basic AORCPRMDDZTZWGCGRUMN:rPTxv3vQ8yPdr64cAsOmwIjdEg7A-n3iTw51sZCKlgaggtsllG0ZGw"}, {"key"=>"email", "value"=>"root@platform.com"}, {"key"=>"password", "value"=>nil}]}
+{"name"=>"222222222-root", "values"=>[{"key"=>"authorization", "value"=>"Basic ASFEWJBEPPXCRHQNFTTF:Xx3icVkWGcgyv6MIIwWjFif5fPksf7l60Q7Q5-8IO8_8dWc9rOKY2A"}, {"key"=>"email", "value"=>"root@client2.com"}, {"key"=>"password", "value"=>nil}]}
+{"name"=>"222222222-Admin_2", "values"=>[{"key"=>"authorization", "value"=>"Basic AAHYLJEKHJFQFLFEKHKB:yGoJ_01ngtEga4RvsBSm3YPEGAo22hqa94IMwlnuLaDioKFLKhtjhA"}, {"key"=>"username", "value"=>"Admin_2"}, {"key"=>"password", "value"=>nil}]}
 ```
 
 Copy the last line of the postman config for `Admin-2` and import it into Postman
@@ -282,7 +278,7 @@ You should see something similar to the following output:
 ```bash
 
 Platform Services    Status                   Core Services        Status                   Infra Services       Status
-------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------
                                               account              Not Enabled              fluentd              Not Enabled
                                               billing              Not Enabled              localstack           Running
                                               cognito              Running                  nginx                Running
@@ -290,7 +286,7 @@ Platform Services    Status                   Core Services        Status       
                                               iam                  Running                  redis                Running
                                               storage              Running                  sftp                 Stopped
 
-*** Services available at https://api.ros.perxtech.org ***
+*** Services available at https://api.ros.rails-on-services.org ***
 *** API Docs available at [TO IMPLEMENT] ***
 ```
 
@@ -350,7 +346,7 @@ Before running these tasks make sure you have valid credentials in the VM at ~/.
 ```bash
 cd [project-name]/[project-dir]
 ros be g env test
-ROS_ENV=test ros be preflight
+ROS_ENV=test ros be init
 ROS_ENV=test ros be up
 ```
 
@@ -364,9 +360,9 @@ Follow the [steps](#test-the-iam-server) for testing the IAM server at the endpo
 ```bash
 ros new project_name
 cd project_name
-ros be preflight
+ros be init
 ros be up -d
-ros be r iam app:ros:iam:credentials:show
+ros be credentials
 ```
 
 ## Services
