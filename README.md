@@ -124,6 +124,50 @@ This will pull and run multiple images, including postgres, redis, nginx and iam
 
 The database migrations will run automatically on the iam service on first boot
 
+Once the service is running and migrations are completed the process will output seed credentials
+and the platform status:
+
+```bash
+Postman:
+{"name"=>"111111111-root", "values"=>[{"key"=>"authorization", "value"=>"Basic AORCPRMDDZTZWGCGRUMN:rPTxv3vQ8yPdr64cAsOmwIjdEg7A-n3iTw51sZCKlgaggtsllG0ZGw"}, {"key"=>"email", "value"=>"root@platform.com"}, {"key"=>"password", "value"=>nil}]}
+{"name"=>"222222222-root", "values"=>[{"key"=>"authorization", "value"=>"Basic ASFEWJBEPPXCRHQNFTTF:Xx3icVkWGcgyv6MIIwWjFif5fPksf7l60Q7Q5-8IO8_8dWc9rOKY2A"}, {"key"=>"email", "value"=>"root@client2.com"}, {"key"=>"password", "value"=>nil}]}
+{"name"=>"222222222-Admin_2", "values"=>[{"key"=>"authorization", "value"=>"Basic AAHYLJEKHJFQFLFEKHKB:yGoJ_01ngtEga4RvsBSm3YPEGAo22hqa94IMwlnuLaDioKFLKhtjhA"}, {"key"=>"username", "value"=>"Admin_2"}, {"key"=>"password", "value"=>nil}]}
+
+Envs:
+PLATFORM__TENANT__1__ROOT__1=Basic AORCPRMDDZTZWGCGRUMN:rPTxv3vQ8yPdr64cAsOmwIjdEg7A-n3iTw51sZCKlgaggtsllG0ZGw
+PLATFORM__TENANT__2__ROOT__2=Basic ASFEWJBEPPXCRHQNFTTF:Xx3icVkWGcgyv6MIIwWjFif5fPksf7l60Q7Q5-8IO8_8dWc9rOKY2A
+PLATFORM__TENANT__2__USER__1=Basic AAHYLJEKHJFQFLFEKHKB:yGoJ_01ngtEga4RvsBSm3YPEGAo22hqa94IMwlnuLaDioKFLKhtjhA
+
+Cli:
+[111111111-root]
+ros_access_key_id=AORCPRMDDZTZWGCGRUMN
+ros_secret_access_key=rPTxv3vQ8yPdr64cAsOmwIjdEg7A-n3iTw51sZCKlgaggtsllG0ZGw
+
+[222222222-root]
+ros_access_key_id=ASFEWJBEPPXCRHQNFTTF
+ros_secret_access_key=Xx3icVkWGcgyv6MIIwWjFif5fPksf7l60Q7Q5-8IO8_8dWc9rOKY2A
+
+[222222222-Admin_2]
+ros_access_key_id=AAHYLJEKHJFQFLFEKHKB
+ros_secret_access_key=yGoJ_01ngtEga4RvsBSm3YPEGAo22hqa94IMwlnuLaDioKFLKhtjhA
+
+
+
+Platform Services    Status                   Core Services        Status                   Infra Services       Status
+------------------------------------------------------------------------------------------------------------------------------------------------
+                                              account              Not Enabled              fluentd              Not Enabled
+                                              billing              Not Enabled              localstack           Running
+                                              cognito              Stopped                  nginx                Running
+                                              comm                 Stopped                  postgres             Running
+                                              iam                  Running                  redis                Running
+                                              storage              Stopped                  sftp                 Stopped
+
+*** Services available at https://api.ros.perxtech.org ***
+*** API Docs available at [TO IMPLEMENT] ***
+```
+
+Check under Core Services that the iam service has Status running
+
 Occationally on first migrations there is an error message like:
 
 ```bash
@@ -135,36 +179,10 @@ PG::ConnectionBad: could not connect to server: Connection refused
 
 If you see this, just re-run the command `ros be up -d iam` Sometimes the database container isn't ready
 
-Verify the IAM Service is running:
 
-```bash
-ros be ps
-```
+### Connect to the IAM Console
 
-You should see something similar to the following output:
-
-```bash
-            Name                           Command               State                        Ports
------------------------------------------------------------------------------------------------------------------------
-whistler_mounted_iam_1          bundle exec rails server - ...   Up       0.0.0.0:32770->3000/tcp
-whistler_mounted_localstack_1   docker-entrypoint.sh             Up       4567/tcp, 4568/tcp, 4569/tcp, 4570/tcp,
-                                                                          4571/tcp, 0.0.0.0:4572->4572/tcp, 4573/tcp,
-                                                                          0.0.0.0:4574->4574/tcp, 4575/tcp,
-                                                                          0.0.0.0:4576->4576/tcp, 4577/tcp, 4578/tcp,
-                                                                          4579/tcp, 4580/tcp, 4581/tcp, 4582/tcp,
-                                                                          4583/tcp, 4584/tcp, 4585/tcp, 4586/tcp,
-                                                                          4587/tcp, 4588/tcp, 4589/tcp, 4590/tcp,
-                                                                          4591/tcp, 4592/tcp, 4593/tcp, 4594/tcp,
-                                                                          4595/tcp, 4596/tcp, 4597/tcp, 8080/tcp
-whistler_mounted_nginx_1        nginx -g daemon off;             Up       0.0.0.0:3000->80/tcp
-whistler_mounted_postgres_1     docker-entrypoint.sh postgres    Up       0.0.0.0:32769->5432/tcp
-whistler_mounted_redis_1        docker-entrypoint.sh redis ...   Up       0.0.0.0:32768->6379/tcp
-whistler_mounted_wait_1         /wait                            Exit 0
-```
-
-### Test the IAM Console
-
-Connect to the serivce's rails console:
+Connect to the service's rails console:
 
 ```bash
 ros be c iam
@@ -175,9 +193,28 @@ You should see something similar to the following output:
 ```bash
 Loading development environment (Rails 6.0.0.rc1)
 
+Loading development environment (Rails 6.0.0.rc1)
+
+Frame number: 0/22
+
+Model Shortcut Console Commands:
+Model               Class  All     Create  First   Last    Pluck
+Group               g      ga      gc      gf      gl      gp
+Policy              p      pa      pc      pf      pl      pp
+PolicyAction        pa     paa     pac     paf     pal     pap
+Root                r      ra      rc      rf      rl      rp
+Tenant              t      ta      tc      tf      tl      tp
+User                u      ua      uc      uf      ul      up
+UserGroup           ug     uga     ugc     ugf     ugl     ugp
+
+Type `help ros` for additional console commands
+
+
 Frame number: 0/16
 [1] [iam][development][public] pry(main)>
 ```
+
+The Model Shortcut commands are convenience methods for accessing and creating objects
 
 In the rails console type `st` (shortcut for switch-tenant). If the database was seeded correctly you should see output like below with two test tenants `111_111_111` and `222_222_222`
 
@@ -197,13 +234,14 @@ Disconnect from the rails console
 
 ### Test the IAM Server
 
-Display test credentials:
+To access the server you will need valid credentials. In a previous step the credentials were displayed. If you need to show them again
+ you can type
 
 ```bash
-ros be r iam app:ros:iam:credentials:show
+ros be credentials
 ```
 
-The last few lines of output will look similar to this:
+The first few lines of output will look similar to this:
 
 ```bash
 Postman
@@ -236,29 +274,27 @@ ros be up -d
 Verify the services are running:
 
 ```bash
-ros be ps
+ros be status
 ```
 
 You should see something similar to the following output:
 
 ```bash
-        Name                       Command               State                            Ports
------------------------------------------------------------------------------------------------------------------------
-whistler_cognito_1      bundle exec rails server - ...   Up       0.0.0.0:32771->3000/tcp
-whistler_comm_1         bundle exec rails server - ...   Up       0.0.0.0:32772->3000/tcp
-whistler_iam_1          bundle exec rails server - ...   Up       0.0.0.0:32770->3000/tcp
-whistler_localstack_1   docker-entrypoint.sh             Up       4567/tcp, 4568/tcp, 4569/tcp, 4570/tcp, 4571/tcp,
-                                                                  0.0.0.0:4572->4572/tcp, 4573/tcp,
-                                                                  0.0.0.0:4574->4574/tcp, 4575/tcp,
-                                                                  0.0.0.0:4576->4576/tcp, 4577/tcp, 4578/tcp, 4579/tcp,
-                                                                  4580/tcp, 4581/tcp, 4582/tcp, 4583/tcp, 4584/tcp,
-                                                                  4585/tcp, 4586/tcp, 4587/tcp, 4588/tcp, 4589/tcp,
-                                                                  4590/tcp, 4591/tcp, 4592/tcp, 4593/tcp, 8080/tcp
-whistler_nginx_1        nginx -g daemon off;             Up       0.0.0.0:3000->80/tcp
-whistler_postgres_1     docker-entrypoint.sh postgres    Up       0.0.0.0:32768->5432/tcp
-whistler_redis_1        docker-entrypoint.sh redis ...   Up       0.0.0.0:32769->6379/tcp
-whistler_wait_1         /wait                            Exit 0
+
+Platform Services    Status                   Core Services        Status                   Infra Services       Status
+------------------------------------------------------------------------------------------------------------------------------------------------
+                                              account              Not Enabled              fluentd              Not Enabled
+                                              billing              Not Enabled              localstack           Running
+                                              cognito              Running                  nginx                Running
+                                              comm                 Running                  postgres             Running
+                                              iam                  Running                  redis                Running
+                                              storage              Running                  sftp                 Stopped
+
+*** Services available at https://api.ros.perxtech.org ***
+*** API Docs available at [TO IMPLEMENT] ***
 ```
+
+That's it for setting up a projet
 
 ## Deploy Project into Kubernetes
 
