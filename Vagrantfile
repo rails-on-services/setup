@@ -48,11 +48,21 @@ Vagrant.configure('2') do |config|
       # meminfo returns kilobytes, convert to MB
       # v.memory = rep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'to_i / 1024 / 8
       v.cpus = %x(nproc).to_i
+	elsif host =~ /mswin|mingw|cygwin/
+      # Windows. Tested on Win 7 SP1
+      # 80% of available free memory, 50% of available CPUs
+      v.memory = (`wmic OS get FreePhysicalMemory`.split[1].to_i / 1024 * 0.80).to_i
+	  cpus = `wmic computersystem Get NumberOfLogicalProcessors`.split[1].to_i / 2
+	  cpus < 1 ? v.cpus = 1 : v.cpus = cpus
     end
   end
 
   project_name = Dir.pwd.split('/').last
-
+  # The hostname set for the VM should only contain letters, numbers, hyphens or dots. It cannot start with a hyphen or dot.
+  # Strip any hypens and dots from the begining of the string
+  project_name.gsub!(/^[-.]+/, "")
+  # Strip any char that is not letter, number, hyphen or dot
+  project_name.gsub!(/[^0-9A-Za-z.-]+/, "")
   config.vm.define project_name do |node|
     node.vm.provider :virtualbox do |v|
       v.name = project_name
@@ -70,10 +80,18 @@ Vagrant.configure('2') do |config|
   end
   config.ssh.forward_agent = true
   config.vm.synced_folder '.', '/vagrant', disabled: true
-  config.vm.synced_folder '.', "/home/vagrant/#{project_name}", type: 'nfs',
+  
+  if Vagrant::Util::Platform.windows? then
+	# Windows compatible mount options. Tested on Win 7 SP1
+    config.vm.synced_folder '.', "/home/vagrant/#{project_name}", type: 'nfs',
+    mount_options: ['dmode=775','fmode=775'],
+    linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
+  else
+    config.vm.synced_folder '.', "/home/vagrant/#{project_name}", type: 'nfs',
     mount_options: ['rw', 'vers=3', 'tcp'],
     linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
-
+  end
+ 
   config.vm.provision 'build', type: 'shell', privileged: false, inline: <<-SHELL
     sudo apt install git --yes
     git clone https://github.com/rails-on-services/setup.git ~/#{project_name}/ros/setup
