@@ -59,10 +59,10 @@ Vagrant.configure('2') do |config|
 
   project_name = Dir.pwd.split('/').last
   # The hostname set for the VM should only contain letters, numbers, hyphens or dots. It cannot start with a hyphen or dot.
-  # Strip any hypens and dots from the begining of the string
-  project_name.gsub!(/^[-.]+/, "")
   # Strip any char that is not letter, number, hyphen or dot
   project_name.gsub!(/[^0-9A-Za-z.-]+/, "")
+  # Strip any hypens and dots from the begining of the string
+  project_name.gsub!(/^[-.]+/, "")
   config.vm.define project_name do |node|
     node.vm.provider :virtualbox do |v|
       v.name = project_name
@@ -82,16 +82,15 @@ Vagrant.configure('2') do |config|
   config.vm.synced_folder '.', '/vagrant', disabled: true
   
   if Vagrant::Util::Platform.windows? then
-	# Windows compatible mount options. Tested on Win 7 SP1
-    config.vm.synced_folder '.', "/home/vagrant/#{project_name}", type: 'nfs',
-    mount_options: ['dmode=775','fmode=775'],
-    linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
+    # Windows compatible mount options. Tested on Win 7 SP1
+    mo = ['dmode=775','fmode=775']
   else
-    config.vm.synced_folder '.', "/home/vagrant/#{project_name}", type: 'nfs',
-    mount_options: ['rw', 'vers=3', 'tcp'],
-    linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
+    mo = ['rw', 'vers=3', 'tcp']
   end
- 
+  config.vm.synced_folder '.', "/home/vagrant/#{project_name}", type: 'nfs',
+  mount_options: mo,
+  linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
+
   config.vm.provision 'build', type: 'shell', privileged: false, inline: <<-SHELL
     sudo apt install git --yes
     git clone https://github.com/rails-on-services/setup.git ~/#{project_name}/ros/setup
