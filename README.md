@@ -15,7 +15,7 @@ If you don't have them, use the following commands to install them with `homebre
 ```bash
 brew cask install virtualbox
 brew cask install vagrant
-``` 
+```
 
 ### Setup Project and VM
 
@@ -40,7 +40,22 @@ NOTE: It is required to have your ssh agent running or have a copy of your ssh p
 
 ### Setup Vagrant and VirtualBox on Windows
 
-TODO
+Make sure you have Vagrant and VirtualBox installed on your machine. If you don't have them, use the following links to download and install required software:
+
+[VirtualBox for Windows](https://www.virtualbox.org/wiki/Downloads)
+
+[Vagrant for Windows](https://www.vagrantup.com/downloads.html)
+
+Run following commands in PowerShell command line to create a directory for the project, download Vagrantfile and bring up the VM:
+
+```pwsh
+mkdir [project-name]
+cd [project-name]
+$dir = (Get-Location)
+$client = new-object System.Net.WebClient
+$client.DownloadFile("https://raw.githubusercontent.com/rails-on-services/setup/master/Vagrantfile","$dir\Vagrantfile")
+vagrant up
+```
 
 ## Verify VM Configuration
 
