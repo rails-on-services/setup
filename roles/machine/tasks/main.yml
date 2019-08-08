@@ -4,8 +4,3 @@
 
 - name: 'Install on detected OS ({{ ansible_os_family }})'
   include_tasks: '{{ ansible_os_family | lower }}.yml'
-
-- name: Set shell mode to vi
-  copy:
-    src: inputrc
-    dest: '{{ ansible_env.HOME }}/.inputrc'
