@@ -2,6 +2,7 @@ Vagrant.configure('2') do |config|
   forward_ports = [
     { name: 'sftp', guest: 2222, host: 2222, enabled: true },
     { name: 'nginx', guest: 3000, host: 3000, enabled: true },
+    { name: 'kafka-ui', guest: 3040, host: 3040, enabled: true },
     { name: 'jekyll', guest: 4000, host: 4000, enabled: true },
     { name: 'angular', guest: 4200, host: 4200, enabled: true },
     { name: 'localstack-ui', guest: 8080, host: 8080, enabled: true },

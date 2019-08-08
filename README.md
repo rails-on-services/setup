@@ -332,14 +332,14 @@ To run the short form:
 
 ```bash
 cd [project-name]/[project-dir]
-ROS_ENV=test ros be init
+ROS_ENV=test ros be infra init
 ```
 
 To run the long form add the `-l` switch:
 
 ```bash
 cd [project-name]/[project-dir]
-ROS_ENV=test ros be init -l
+ROS_ENV=test ros be infra init -l
 ```
 
 If the command succeeded you should see output similar to:
