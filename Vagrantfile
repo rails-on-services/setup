@@ -49,54 +49,59 @@ Vagrant.configure('2') do |config|
       # meminfo returns kilobytes, convert to MB
       # v.memory = rep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'to_i / 1024 / 8
       v.cpus = %x(nproc).to_i
-	elsif host =~ /mswin|mingw|cygwin/
+    elsif host =~ /mswin|mingw|cygwin/
       # Windows. Tested on Win 7 SP1
       # 80% of available free memory, 50% of available CPUs
       v.memory = (`wmic OS get FreePhysicalMemory`.split[1].to_i / 1024 * 0.80).to_i
-	  cpus = `wmic computersystem Get NumberOfLogicalProcessors`.split[1].to_i / 2
-	  cpus < 1 ? v.cpus = 1 : v.cpus = cpus
+      cpus = `wmic computersystem Get NumberOfLogicalProcessors`.split[1].to_i / 2
+      cpus < 1 ? v.cpus = 1 : v.cpus = cpus
     end
   end
 
   project_name = Dir.pwd.split('/').last
   # The hostname set for the VM should only contain letters, numbers, hyphens or dots. It cannot start with a hyphen or dot.
-  # Strip any char that is not letter, number, hyphen or dot
+  # Strip any char that is not letter, number, hyphen or dot then strip any hypens and dots from the begining of the string
   project_name.gsub!(/[^0-9A-Za-z.-]+/, "")
-  # Strip any hypens and dots from the begining of the string
   project_name.gsub!(/^[-.]+/, "")
+
+  # Base machine
+  config.vm.box = 'debian/contrib-stretch64'
+  config.vm.box_version = '9.9.1'
+  config.ssh.forward_agent = true
+
+  # Basic networking
   config.vm.define project_name do |node|
     node.vm.provider :virtualbox do |v|
       v.name = project_name
     end
     node.vm.hostname = "#{project_name}.local"
-    # node.vm.network :private_network, type: :dhcp
-    node.vm.network :private_network, ip: '192.168.0.4'
+    # Use an unlikely subnet to avoid clashes; It would be better to use dhcp, but NFS on MacOS doesn't like that
+    node.vm.network :private_network, ip: '192.168.173.4'
   end
 
-  config.vm.box = 'debian/contrib-stretch64'
-  config.vm.box_version = '9.9.1'
+  # Port forwarding
   forward_ports.each do |port|
     next unless port[:enabled]
     config.vm.network 'forwarded_port', guest: port[:guest], host: port[:host]
   end
-  config.ssh.forward_agent = true
-  config.vm.synced_folder '.', '/vagrant', disabled: true
-  
-  if Vagrant::Util::Platform.windows? then
-    # Windows compatible mount options. Tested on Win 7 SP1
-    mo = ['dmode=775','fmode=775']
-  else
-    mo = ['rw', 'vers=3', 'tcp']
-  end
-  config.vm.synced_folder '.', "/home/vagrant/#{project_name}", type: 'nfs',
-  mount_options: mo,
-  linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
 
+  # Windows compatible mount options. Tested on Win 7 SP1
+  mount_options = Vagrant::Util::Platform.windows? ? ['dmode=775','fmode=775'] : ['rw', 'vers=3', 'tcp']
+
+  # Shared directories
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.vm.synced_folder '.', "/home/vagrant/#{project_name}", type: 'nfs', mount_options: mount_options,
+    linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
+
+  # Provisioning
   config.vm.provision 'build', type: 'shell', privileged: false, inline: <<-SHELL
     sudo apt install git --yes
-    git clone https://github.com/rails-on-services/setup.git ~/#{project_name}/ros/setup
-    ~/#{project_name}/ros/setup/setup.sh
-    cd ~/#{project_name}/ros/setup && ./backend.yml
-    cd ~/#{project_name}/ros/setup && ./devops.yml
+    DIRECTORY=~/#{project_name}/ros/setup
+    if [ ! -d "$DIRECTORY" ]; then
+      git clone https://github.com/rails-on-services/setup.git $DIRECTORY
+    fi
+    $DIRECTORY/setup.sh
+    cd $DIRECTORY && ./backend.yml
+    cd $DIRECTORY && ./devops.yml
   SHELL
 end
