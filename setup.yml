@@ -7,7 +7,8 @@
     - include_role:
         name: setup
       vars:
-        role_spec: {}
+        role_spec:
+          ssh_username: rjayroach
       #     dir: '{{ project.value.dir }}'
       #     repos: '{{ project.value.repos | default({}) }}'
       #     tmuxinator: '{{ project.value.tmuxinator }}'

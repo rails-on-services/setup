@@ -1,0 +1,27 @@
+---
+boot_file: preseed.cfg
+
+builders:
+  virtualbox_iso:
+    guest_os_type: Debian_64
+    iso_checksum: 3e09869c05b254c45fd6ae44997af2a5
+    iso_checksum_type: md5
+    iso_url: https://cdimage.debian.org/debian-cd/10.0.0/amd64/iso-cd/debian-10.0.0-amd64-xfce-CD-1.iso
+    shutdown_command: "echo 'halt -p' > shutdown.sh; echo 'vagrant'|sudo -S sh 'shutdown.sh'"
+    
+    boot_command:
+      - "<esc><wait>"
+      - "install "
+      - "{% raw %}preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/stretch64/preseed.cfg{% endraw %} "
+      - "debian-installer=en_US "
+      - "auto "
+      - "locale=en_US "
+      - "kbd-chooser/method=us "
+      - "{% raw %}netcfg/get_hostname={{ .Name }}{% endraw %} "
+      - "netcfg/get_domain=vagrantup.com "
+      - "fb=false "
+      - "debconf/frontend=noninteractive "
+      - "console-setup/ask_detect=false "
+      - "console-keymaps-at/keymap=us "
+      - "keyboard-configuration/xkb-keymap=us "
+      - "<enter><wait>"

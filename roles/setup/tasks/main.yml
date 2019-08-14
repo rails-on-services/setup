@@ -44,4 +44,3 @@
     src: packer.yml.j2
     dest: '{{ playbook_dir }}/packer.yml'
     mode: 0755
-  when: false
