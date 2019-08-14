@@ -96,10 +96,11 @@
         aliases_block: |
           source <(helm completion bash)
 
-    - name: Add kubectl apt signing key
+    - name: Add google apt signing key
       apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         state: present
+        keyring: /usr/share/keyrings/cloud.google.gpg
       become: yes
     - name: Add kubectl apt repo
       apt_repository:
@@ -107,9 +108,16 @@
         state: present
         filename: kubernetes
       become: yes
-    - name: Install kubectl
+    - name: Add gcloud sdk apt repo
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
+        state: present
+        filename: google-cloud-sdk
+      become: yes
+
+    - name: Install kubectl and google-cloud-sdk
       apt:
-        name: [kubectl]
+        name: [kubectl, google-cloud-sdk]
         state: present
         update_cache: yes
       become: yes
