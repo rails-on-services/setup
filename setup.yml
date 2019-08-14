@@ -1,0 +1,16 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Configure packer
+  hosts: localhost
+  tasks:
+    # - include_vars: projects-vars.yml
+    - include_role:
+        name: setup
+      vars:
+        role_spec: {}
+      #     dir: '{{ project.value.dir }}'
+      #     repos: '{{ project.value.repos | default({}) }}'
+      #     tmuxinator: '{{ project.value.tmuxinator }}'
+      # with_dict: '{{ projects }}'
+      # loop_control:
+      #   loop_var: project

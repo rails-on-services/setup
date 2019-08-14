@@ -1,7 +1,7 @@
 ---
 base_spec:
-  version: 1.2.1
-  file: packer_1.2.1_linux_amd64
+  version: 1.4.2
+  file: packer_1.4.2_linux_amd64
   plugin_dir: '{{ ansible_env.HOME }}/.packer.d/plugins'
 
   plugins:
