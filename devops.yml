@@ -100,7 +100,7 @@
       apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         state: present
-        keyring: /usr/share/keyrings/cloud.google.gpg
+        # keyring: /usr/share/keyrings/cloud.google.gpg
       become: yes
     - name: Add kubectl apt repo
       apt_repository:
@@ -110,7 +110,8 @@
       become: yes
     - name: Add gcloud sdk apt repo
       apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
+        # repo: "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"
+        repo: deb https://packages.cloud.google.com/apt cloud-sdk main
         state: present
         filename: google-cloud-sdk
       become: yes
