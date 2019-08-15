@@ -4,8 +4,8 @@ builders:
     disk_size: 20240
     guest_additions_path: /tmp/VBoxGuestAdditions.iso
     headless: no
-    http_directory: 'build/{{ spec.distribution }}'
-    output_directory: 'build/{{ spec.distribution }}/{{ spec.version }}/{{ spec.target }}'
+    http_directory: 'src/{{ spec.distribution }}'
+    output_directory: 'src/{{ spec.distribution }}/{{ spec.version }}/{{ spec.target }}'
     ssh_password:  '{{ spec.ssh_password }}'
     # ssh_port: 22
     ssh_username: '{{ spec.ssh_username }}'

@@ -9,9 +9,3 @@
       vars:
         role_spec:
           ssh_username: rjayroach
-      #     dir: '{{ project.value.dir }}'
-      #     repos: '{{ project.value.repos | default({}) }}'
-      #     tmuxinator: '{{ project.value.tmuxinator }}'
-      # with_dict: '{{ projects }}'
-      # loop_control:
-      #   loop_var: project

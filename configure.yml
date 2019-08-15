@@ -1,17 +1,17 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: Configure packer
+- name: Configure a build
   hosts: localhost
   tasks:
     # - include_vars: projects-vars.yml
     - include_role:
-        name: build
+        name: configure
       vars:
         role_spec:
           # _select: [work_dir, distribution, version, profile, source, target, owner, aws_s3_bucket, aws_profile, aws_region, push]
-          _select: [profile, source, target, owner, push]
+          # _select: [profile, source, target, owner, push]
           # work_dir: {{ role_spec.work_dir }}
-          work_dir: testing
+          work_dir: ros
           distribution: debian
           # version: stretch64
           version: buster64

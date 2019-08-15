@@ -12,7 +12,7 @@ builders:
     boot_command:
       - "<esc><wait>"
       - "install "
-      - "{% raw %}preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/stretch64/preseed.cfg{% endraw %} "
+      - "{% raw %}preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/buster64/preseed.cfg{% endraw %} "
       - "debian-installer=en_US "
       - "auto "
       - "locale=en_US "

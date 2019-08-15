@@ -18,6 +18,7 @@
 
 - set_fact:
     env: "{{ base_env | combine(distro_version_env | default({}), recursive=True) | combine(profile_env, recursive=True) | combine(push_env | default({}), recursive=True) }}"
+    work_dir: 'builds/{{ spec.work_dir }}'
 
 # - debug: var=base_env
 # - debug: var=distro_version_env
@@ -25,33 +26,49 @@
 # - debug: var=env
 # - meta: end_play
 
-- name: 'Create {{ spec.work_dir }}/{{ spec.scripts_dir }}'
+- name: 'Create {{ work_dir }}/{{ spec.scripts_dir }}'
   file:
-    path: '{{ spec.work_dir }}/{{ spec.scripts_dir }}/{{ spec.version }}'
+    path: '{{ work_dir }}/{{ spec.scripts_dir }}/{{ spec.version }}'
     state: directory
 
-- name: 'Template {{ spec.work_dir }}/{{ spec.build_script }}'
+- name: 'Create {{ work_dir }}/{{ spec.scripts_dir }}'
+  file:
+    path: '{{ work_dir }}/{{ spec.scripts_dir }}/{{ spec.version }}'
+    state: directory
+
+- name: Create a symbolic link
+  file:
+    src: ../packer_cache
+    dest: '{{ work_dir }}/packer_cache'
+    state: link
+
+- name: 'Template {{ work_dir }}/{{ spec.build_script }}'
   template:
     src: build-script.json.j2
-    dest: '{{ spec.work_dir }}/{{ spec.build_script }}'
+    dest: '{{ work_dir }}/{{ spec.build_script }}'
 
 - name: Copy json.rb
   copy:
     src: json.rb
-    dest: '{{ spec.work_dir }}/json.rb'
+    dest: '{{ work_dir }}/json.rb'
     mode: 0755
+# - debug: var=spec
+# - debug: var=distro_version_env
 
 - name: Template the boot config
   template:
     src: '{{ spec.distribution }}/{{ spec.version }}/{{ distro_version_env.boot_file }}.j2'
-    dest: '{{ spec.work_dir }}/{{ spec.scripts_dir }}/{{ spec.version }}/{{ distro_version_env.boot_file }}'
+    dest: '{{ work_dir }}/{{ spec.scripts_dir }}/{{ spec.version }}/{{ distro_version_env.boot_file }}'
   when: spec.profile == 'iso'
 
-- name: 'Build from {{ spec.build_script }}'
-  command: 'packer build --force {{ spec.build_script }}'
-  args:
-    chdir: '{{ spec.work_dir }}'
-  when: false
+- name: Template the build script
+  template:
+    src: build.j2
+    dest: '{{ work_dir }}/build-{{ role_spec.target }}-from-{{ role_spec.source }}'
+    mode: 0755
+
+# - debug: var=spec.build_script
+# - debug: var=work_dir
 
 
 #- set_fact:

@@ -33,14 +33,17 @@
   loop_control:
     loop_var: plugin
 
+# This is the build.yml
 - name: 'Template config to {{ cli_vars_dir }}/packer.yml'
   template:
     src: cli.yml.j2
     dest: '{{ cli_vars_dir }}/packer.yml'
   when: false
 
+# This is the playbook that is called to 'provision' the image after packer creates it
 - name: 'Template playbook to {{ playbook_dir }}/packer.yml'
   template:
     src: packer.yml.j2
     dest: '{{ playbook_dir }}/packer.yml'
     mode: 0755
+  when: false

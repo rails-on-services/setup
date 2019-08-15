@@ -10,8 +10,8 @@ base_env:
         - "ANSIBLE_RETRY_FILES_ENABLED=false"
 
 base_spec:
-  scripts_dir: 'build/{{ role_spec.distribution }}'
-  build_script: 'build/{{ role_spec.distribution }}/{{ role_spec.version }}/{{ role_spec.target }}-from-{{ role_spec.source }}.json'
+  scripts_dir: 'src/{{ role_spec.distribution }}'
+  build_script: 'src/{{ role_spec.distribution }}/{{ role_spec.version }}/{{ role_spec.target }}-from-{{ role_spec.source }}.json'
   ssh_username: "{{ role_spec.ssh_username | default('vagrant') }}"
   box_version: 0.0.1
   vm_name: image
