@@ -82,13 +82,13 @@
         creates: '{{ bin_dir }}/helm'
       become: yes
     
-    - name: Init Helm
-      command: 'helm init --client-only'
-      become: yes
-      
-    - name: Install Helm Incubator repo
-      command: 'helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator'
-      become: yes
+    #- name: Init Helm
+    #  command: 'helm init --client-only'
+    #  become: yes
+
+    #- name: Install Helm Incubator repo
+    #  command: 'helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator'
+    #  become: yes
 
     - name: 'Remove linux'
       file:
