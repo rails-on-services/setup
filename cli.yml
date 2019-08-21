@@ -10,6 +10,7 @@
       import_role:
         name: machine
       vars: {}
+      when: false
 
     - name: Install ruby
       import_role:
@@ -17,6 +18,7 @@
       vars:
         role_spec:
           versions: '{{ ruby_versions }}'
+      when: false
 
     - name: Install node and requested node packages
       import_role:
@@ -36,12 +38,12 @@
             ros:
               url: https://github.com/rails-on-services/ros-cli.git
               name: cli
-            guides:
-              url: https://github.com/rails-on-services/guides.git
-            setup:
-              url: https://github.com/rails-on-services/setup.git
-            images:
-              url: https://github.com/rails-on-services/images.git
+            # guides:
+            #   url: https://github.com/rails-on-services/guides.git
+            # setup:
+            #   url: https://github.com/rails-on-services/setup.git
+            # images:
+            #   url: https://github.com/rails-on-services/images.git
 
     - name: Configure instance
       import_role:
@@ -57,3 +59,4 @@
         aliases_block: |
           export RAILS_DATABASE_USER=vagrant
           export RAILS_DATABASE_PASSWORD=vagrant
+      when: false
