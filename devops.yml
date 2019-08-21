@@ -81,7 +81,13 @@
         chdir: '{{ bin_dir }}'
         creates: '{{ bin_dir }}/helm'
       become: yes
-    
+
+    - name: Init Helm
+      command: 'helm init --client-only'
+
+    - name: Install Helm Incubator repo
+      command: 'helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator'
+
     - name: 'Remove linux'
       file:
         path: '{{ bin_dir }}/linux-amd64'
