@@ -52,6 +52,6 @@
           export RUBYLIB=$RUBYLIB:{{ project_dir }}/lib
 
     - name: install ros-cli dependencies
-      shell: bundle install
+      shell: rm Gemfile.lock && bundle install
       args:
         chdir: '{{ project_dir }}'
