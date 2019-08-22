@@ -9,7 +9,7 @@ Vagrant.configure('2') do |config|
     { name: 'live-reload', guest: 35729, host: 35729, enabled: true }
   ]
 
-  required_plugins = %w(vagrant-persistent-storage)
+  required_plugins = %w()
   _retry = false
   required_plugins.each do |plugin|
     unless Vagrant.has_plugin? plugin
@@ -20,16 +20,8 @@ Vagrant.configure('2') do |config|
 
   exec "vagrant #{ARGV.join(' ')}" if (_retry)
 
-  config.persistent_storage.enabled = true
-  config.persistent_storage.use_lvm = false
-  config.persistent_storage.location = './dockerhdd.vdi'
-  config.persistent_storage.size = 20000
-  config.persistent_storage.part_type_code = '83'
-  config.persistent_storage.diskdevice = '/dev/sdb'
-  config.persistent_storage.filesystem = 'ext4'
-  config.persistent_storage.mountpoint = '/var/lib/docker'
-
   config.vm.provider :virtualbox do |v|
+    # v.gui = true
     # v.customize ['modifyhd', 'disk id', '--resize', '30000']
     # v.memory = 2048
     # v.cpus = 1
