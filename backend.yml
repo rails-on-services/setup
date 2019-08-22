@@ -2,10 +2,6 @@
 ---
 - hosts: backend
   tasks:
-    - name: include version vars
-      include_vars:
-        file: backend-vars.yml
-
     - name: Install machine tools
       import_role:
         name: machine
@@ -31,21 +27,6 @@
               name: '{{ ansible_env.USER }}'
               password: '{{ ansible_env.USER }}'
 
-    - name: Install ruby
-      import_role:
-        name: ruby
-      vars:
-        role_spec:
-          versions: '{{ ruby_versions }}'
-
-    - name: Install node and requested node packages
-      import_role:
-        name: nodejs
-      vars:
-        role_spec:
-          version: '{{ node_version }}'
-          packages: '{{ node_packages }}'
-
     - name: Clone ros projects
       import_role:
         name: git
@@ -53,21 +34,12 @@
         role_spec:
           project_dir: "{{ lookup('pipe', 'pwd') }}/.."
           repositories:
-            ros:
-              url: https://github.com/rails-on-services/ros-cli.git
-              name: cli
             guides:
               url: https://github.com/rails-on-services/guides.git
             setup:
               url: https://github.com/rails-on-services/setup.git
             images:
               url: https://github.com/rails-on-services/images.git
-
-    - name: Configure instance
-      import_role:
-        name: instance
-      vars:
-        project_dir: "{{ lookup('pipe', 'pwd') }}/../cli"
 
     - name: Insert aliases
       include_role:

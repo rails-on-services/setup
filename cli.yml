@@ -6,11 +6,12 @@
       include_vars:
         file: cli-vars.yml
 
-    - name: Install machine tools
+    - name: Install ruby
       import_role:
-        name: machine
-      vars: {}
-      when: false
+        name: ruby
+      vars:
+        role_spec:
+          versions: '{{ ruby_versions }}'
 
     - name: Install node and requested node packages
       import_role:
@@ -30,28 +31,9 @@
             ros:
               url: https://github.com/rails-on-services/ros-cli.git
               name: cli
-            # guides:
-            #   url: https://github.com/rails-on-services/guides.git
-            # setup:
-            #   url: https://github.com/rails-on-services/setup.git
-            # images:
-            #   url: https://github.com/rails-on-services/images.git
 
-    - name: Configure instance
-      set_fact:
-        project_dir: "{{ lookup('pipe', 'pwd') }}/../cli"
-
-    - name: Insert path to ros lib and exe
-      include_role:
-        name: aliases
+    - name: Configure cli
+      import_role:
+        name: cli
       vars:
-        type: profile
-        aliases_marker: ros
-        aliases_block: |
-          export PATH=$PATH:{{ project_dir }}/exe
-          export RUBYLIB=$RUBYLIB:{{ project_dir }}/lib
-
-    - name: install ros-cli dependencies
-      shell: rm Gemfile.lock && bundle install
-      args:
-        chdir: '{{ project_dir }}'
+        project_dir: "{{ lookup('pipe', 'pwd') }}/../cli"

@@ -95,5 +95,6 @@ Vagrant.configure('2') do |config|
     $DIRECTORY/setup.sh
     cd $DIRECTORY && ./backend.yml
     cd $DIRECTORY && ./devops.yml
+    cd $DIRECTORY && ./cli.yml
   SHELL
 end
