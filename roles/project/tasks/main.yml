@@ -1,0 +1,9 @@
+---
+- name: Configure base image
+  include_tasks: base.yml
+  when: role_spec.base is defined
+
+- name: Configure build images
+  include_tasks: builds.yml
+  when: role_spec.builds is defined
+  with_items: '{{ role_spec.builds }}'

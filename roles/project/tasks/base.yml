@@ -1,0 +1,125 @@
+---
+# - debug: var=role_spec
+# - debug: var=base_spec
+# - debug: var=spec
+
+- name: Include base distibution/version vars
+  include_vars:
+    # Example: debian/buster64.yml
+    file: '{{ spec.base.distribution }}/{{ spec.base.version }}.yml'
+    name: distro_version_env
+  # when: spec.profile == 'iso'
+
+  # - debug: var=distro_version_env
+
+- name: Include base profile vars
+  include_vars:
+    file: '{{ spec.base.profile }}.yml'
+    name: profile_env
+
+    # - debug: var=profile_env
+
+- name: Include s3 push vars
+  include_vars:
+    file: push.yml
+    name: push_env
+  when: spec.push is defined and spec.push | bool
+
+- set_fact:
+    base_env:
+      provisioners:
+        ansible:
+          groups: ['packer-{{ spec.base.target }}']
+          playbook_file: '{{ playbook_dir }}/packer.yml'
+          type: ansible
+          user: "{{ spec.ssh_username | default('vagrant') }}"
+          ansible_env_vars:
+            - "ANSIBLE_RETRY_FILES_ENABLED=false"
+# - debug: var=base_env
+# - debug: var=distro_version_env
+# - debug: var=profile_env
+# - debug: var=role_spec
+# env: "{{ base_env | combine(distro_version_env | default({}), recursive=True) | combine(profile_env, recursive=True) | combine(push_env | default({}), recursive=True) }}"
+# - debug: var=env
+    # work_dir: '{{ spec.work_dir | default(builds) }}'
+
+- name: Set values derived from spec
+  set_fact:
+    derived_spec:
+      scripts_dir: '{{ spec.work_dir }}/base/{{ spec.base.distribution }}'
+      build_script: '{{ spec.work_dir }}/base/{{ spec.base.distribution }}/{{ spec.base.version }}/{{ spec.base.target }}-from-{{ spec.base.source }}.json'
+
+- name: Combine derived spec with original spec
+  set_fact:
+    spec: "{{ spec | combine(derived_spec, recursive=True) }}"
+
+# - debug: var=spec
+# - debug: var=build_script
+# - debug: var=base_env
+# - debug: var=distro_version_env
+# - debug: var=profile_env
+# - debug: var=env
+# - meta: end_play
+
+- name: 'Create {{ spec.scripts_dir }}'
+  file:
+    path: '{{ spec.scripts_dir }}/{{ spec.base.version }}'
+    state: directory
+
+- name: Create a symbolic link
+  file:
+    src: ../packer_cache
+    dest: '{{ work_dir }}/packer_cache'
+    state: link
+  when: false
+
+- name: 'Template {{ spec.build_script }}'
+  template:
+    src: build-script.json.j2
+    dest: '{{ spec.build_script }}'
+  when: false
+
+- name: Copy json.rb
+  copy:
+    src: json.rb
+    dest: '{{ spec.work_dir }}/json.rb'
+    mode: 0755
+
+- name: Template the boot config
+  template:
+    src: '{{ spec.base.distribution }}/{{ spec.base.version }}/{{ distro_version_env.boot_file }}.j2'
+    dest: '{{ spec.scripts_dir }}/{{ spec.base.version }}/{{ distro_version_env.boot_file }}'
+  when: spec.base.profile == 'iso'
+
+- name: Template the build script
+  template:
+    src: build.j2
+    dest: '{{ spec.work_dir }}/build-{{ spec.base.target }}-from-{{ spec.base.source }}'
+    mode: 0755
+
+# - debug: var=spec.build_script
+# - debug: var=work_dir
+
+
+#- set_fact:
+    # Calculate the next box version
+#         FileUtils.cp("#{Prepd.files_dir}/machine/#{os_env['base_dir']}/preseed.cfg", '.')
+#         system(build_env, "packer build #{action_file}")
+#         FileUtils.rm('preseed.cfg')
+
+#     def box_version
+#       return '0.0.1' unless File.exists?(box_json_file)
+#       json = JSON.parse(File.read(box_json_file))
+#       current_version = json['versions'].first['version']
+#       return current_version if build_action.eql?(:push)
+#       inc(current_version, type: bump)
+#     end
+# 
+#     def inc(version, type: 'patch')
+#       idx = { 'major' => 0, 'minor' => 1, 'patch' => 2 }
+#       ver = version.split('.')
+#       ver[idx['patch']] = 0 if %w(major minor).include? type
+#       ver[idx['minor']] = 0 if %w(major).include? type
+#       ver[idx[type]] = ver[idx[type]].to_i + 1
+#       ver.join('.')
+#     end

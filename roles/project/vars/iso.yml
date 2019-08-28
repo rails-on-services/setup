@@ -4,8 +4,8 @@ builders:
     disk_size: 20240
     guest_additions_path: /tmp/VBoxGuestAdditions.iso
     headless: no
-    http_directory: 'src/{{ spec.distribution }}'
-    output_directory: 'src/{{ spec.distribution }}/{{ spec.version }}/{{ spec.target }}'
+    http_directory: 'src/{{ spec.base.distribution }}'
+    output_directory: 'src/{{ spec.base.distribution }}/{{ spec.base.version }}/{{ spec.base.target }}'
     ssh_password:  '{{ spec.ssh_password }}'
     # ssh_port: 22
     ssh_username: '{{ spec.ssh_username }}'
@@ -43,4 +43,5 @@ post_processors:
   vagrant:
     type: vagrant
     keep_input_artifact: yes
-    output: 'boxes/{{ spec.owner }}/{{ spec.version }}-{{ spec.target }}.box'
+    # output: 'boxes/{{ spec.owner }}/{{ spec.base.version }}-{{ spec.base.target }}.box'
+    output: 'boxes/{{ spec.base.distribution }}/{{ spec.base.version }}-{{ spec.base.target }}.box'

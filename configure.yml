@@ -1,31 +1,37 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: Configure a build
+- name: Build ros Vagrant boxes
   hosts: localhost
   tasks:
     # - include_vars: projects-vars.yml
     - include_role:
-        name: configure
+        name: project
       vars:
         role_spec:
-          # _select: [work_dir, distribution, version, profile, source, target, owner, aws_s3_bucket, aws_profile, aws_region, push]
-          # _select: [profile, source, target, owner, push]
-          # work_dir: {{ role_spec.work_dir }}
-          work_dir: ros
-          distribution: debian
-          # version: stretch64
-          version: buster64
-          profile: iso # iso or build
-          source: iso # base # iso
-          target: base # minikube # base
-          owner: rjayroach
-          # owner: {{ role_spec.owner }}
-          # aws_s3_bucket: {{ role_spec.aws_s3_bucket }}
-          aws_profile: default
-          # aws_region: {{ role_spec.aws_region }}
-          push: no
-          box_version: 0.0.1
-          bump_version: patch # minor, major
+          name: ros
+          # work_dir: builds
+          xbase:
+            distribution: debian
+            version: buster64
+          builds:
+            - ros:
+                # profile: build
+                source: base
+                disk_size: 50000
+                # playbook: ros
+                # target: ros
+            - ros_rjayroach:
+                # profile: build
+                source: ros
+                # target: ros-rjayroach
+          # owner: rjayroach
+          # # owner: {{ role_spec.owner }}
+          # # aws_s3_bucket: {{ role_spec.aws_s3_bucket }}
+          # aws_profile: default
+          # # aws_region: {{ role_spec.aws_region }}
+          # push: no
+          # box_version: 0.0.1
+          # bump_version: patch # minor, major
           ssh_username: test # {{ role_spec.ssh_username }}
           ssh_password: test # "{{ dbl }} 999999999999999999999 | random | string | to_uuid }}"
-          ssh_private_key_file: '{{ ansible_env.HOME }}/.ssh/id_rsa'
+          # ssh_private_key_file: '{{ ansible_env.HOME }}/.ssh/id_rsa'
