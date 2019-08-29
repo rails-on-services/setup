@@ -27,6 +27,13 @@
               name: '{{ ansible_env.USER }}'
               password: '{{ ansible_env.USER }}'
 
+    - name: Install ruby
+      import_role:
+        name: ruby
+      vars:
+        role_spec:
+          versions: '{{ ruby_versions }}'
+
     - name: Clone ros projects
       import_role:
         name: git
