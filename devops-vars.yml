@@ -5,3 +5,4 @@ skaffold: v0.36.0
 vault: 1.2.1
 terraform: 0.12.6
 helm: 2.14.3
+ruby_versions: ['2.6.3']

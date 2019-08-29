@@ -6,13 +6,6 @@
       include_vars:
         file: cli-vars.yml
 
-    - name: Install ruby
-      import_role:
-        name: ruby
-      vars:
-        role_spec:
-          versions: '{{ ruby_versions }}'
-
     - name: Install node and requested node packages
       import_role:
         name: nodejs
@@ -32,6 +25,7 @@
               url: https://github.com/rails-on-services/ros-cli.git
               name: cli
               version: "{{ ros_cli_version }}"
+
     - name: Configure cli
       import_role:
         name: cli

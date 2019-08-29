@@ -136,3 +136,10 @@
         aliases_marker: k8s-kubectl
         aliases_block: |
           source <(kubectl completion bash)
+
+    - name: Install ruby
+      import_role:
+        name: ruby
+      vars:
+        role_spec:
+          versions: '{{ ruby_versions }}'
