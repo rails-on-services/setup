@@ -31,7 +31,7 @@
             ros:
               url: https://github.com/rails-on-services/ros-cli.git
               name: cli
-
+              version: "{{ ros_cli_version }}"
     - name: Configure cli
       import_role:
         name: cli
