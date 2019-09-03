@@ -31,6 +31,13 @@
         mode: 0755
       become: yes
 
+    - name: Install dependencies
+      apt:
+        name: [unzip]
+        state: present
+        # update_cache: yes
+      become: yes
+
     - name: Check for vault
       stat:
         path: /usr/local/bin/vault

@@ -31,9 +31,11 @@
             ros:
               url: https://github.com/rails-on-services/ros-cli.git
               name: cli
+      when: clone_repos|bool == True
 
     - name: Configure cli
       import_role:
         name: cli
       vars:
         project_dir: "{{ lookup('pipe', 'pwd') }}/../cli"
+      when: clone_repos|bool == True

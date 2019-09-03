@@ -1,4 +1,2 @@
 ---
-node_version: 11.x
-node_packages: ['openapi-to-postmanv2', '@angular/cli']
-ruby_versions: ['2.6.3']
+clone_repos: yes

@@ -2,6 +2,10 @@
 ---
 - hosts: backend
   tasks:
+    - name: include version vars
+      include_vars:
+        file: backend-vars.yml
+
     - name: Install machine tools
       import_role:
         name: machine
@@ -40,6 +44,7 @@
               url: https://github.com/rails-on-services/setup.git
             images:
               url: https://github.com/rails-on-services/images.git
+      when: clone_repos|bool == True
 
     - name: Insert aliases
       include_role:
