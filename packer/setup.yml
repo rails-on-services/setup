@@ -3,9 +3,5 @@
 - name: Configure packer
   hosts: localhost
   tasks:
-    # - include_vars: projects-vars.yml
     - include_role:
         name: setup
-      vars:
-        role_spec:
-          ssh_username: rjayroach

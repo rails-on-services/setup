@@ -1,0 +1,19 @@
+---
+- hosts: backend
+  tasks:
+    - name: Provision vagrant machine
+      include_role:
+        name: vagrant
+
+# NOTE: Extra vars are passed in from the packer file which prevents the machine from
+# pulling the repos; This is so that when the VM is booted with an NFS share
+# it then gets the projects from the shared directory
+# This requires to user to run cli.yml after the machine is booted the first time on a new project
+- name: Install cli tools
+  import_playbook: ../../cli.yml
+
+- name: Install backend services
+  import_playbook: ../../backend.yml
+
+- name: Install devops tools
+  import_playbook: ../../devops.yml

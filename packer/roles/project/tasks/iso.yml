@@ -44,16 +44,16 @@
 
 - set_fact:
     base_env:
-      provisioners:
-        ansible:
-# TODO: the group should be based of the type, e.g. base
-          groups: ['packer-{{ spec.target }}']
-# TODO: the playbook should be based of the type, e.g. base
-          playbook_file: '{{ playbook_dir }}/packer.yml'
-          type: ansible
-          user: '{{ spec.ssh_username }}'
-          ansible_env_vars:
-            - "ANSIBLE_RETRY_FILES_ENABLED=false"
+      provisioners: []
+      # ansible:
+          # # TODO: the group should be based of the type, e.g. base
+          # groups: ['packer-{{ spec.target }}']
+          # # TODO: the playbook should be based of the type, e.g. base
+          # playbook_file: '{{ playbook_dir }}/packer.yml'
+          # type: ansible
+          # user: '{{ spec.ssh_username }}'
+          # ansible_env_vars:
+          #   - "ANSIBLE_RETRY_FILES_ENABLED=false"
 
 # - debug: var=base_env
 

@@ -46,11 +46,25 @@
 
 # - debug: var=build_env
 
+- name: Copy version.rb
+  copy:
+    src: version.rb
+    dest: '{{ spec.work_dir }}/version.rb'
+    mode: 0755
+
+# TODO: Refactor to remove hard coded values
+- name: Get current version
+  command: '{{ spec.work_dir }}/version.rb {{ role_spec.project.project_name }} {{ build_spec.name }} patch'
+  register: current_version
+
+- set_fact:
+    box_version: '{{ current_version.stdout }}'
+
 - name: Include s3 push vars
   include_vars:
     file: push.yml
     name: push_env
-  when: spec.push is defined # and spec.push | bool
+  when: spec.push is defined and spec.push | bool == True
 - debug: var=push_env
 
 - set_fact:
@@ -63,15 +77,15 @@
             - 'sudo apt install git python-pip --yes'
             - 'sudo pip install ansible'
         ansible:
-          playbook_file: '{{ playbook_dir }}/playbooks/{{ build_spec.playbook | default(spec.target) }}.yml'
+          playbook_file: '{{ playbook_dir }}/provision/{{ build_spec.playbook | default(spec.target) }}.yml'
           host_alias: backend
           type: ansible
           user: '{{ spec.ssh_username }}'
           extra_arguments: [ "--extra-vars", "clone_repos=no" ]
           ansible_env_vars:
             - "ANSIBLE_RETRY_FILES_ENABLED=false"
-            # - "ANSIBLE_ROLES_PATH={{ playbook_dir }}/playbooks/roles"
-            - "ANSIBLE_ROLES_PATH=/Users/rjayroach/perx/ros/setup/roles"
+            - "ANSIBLE_ROLES_PATH={{ playbook_dir.split('/')[0:-1] | join('/') }}/roles"
+
 # - debug: var=base_env
 
 - name: Set env for builder

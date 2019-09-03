@@ -3,7 +3,7 @@ builders:
   virtualbox_ovf:
     guest_additions_mode: disable
     headless: no
-    output_directory: '{{ spec.project_name }}/{{ spec.name }}/{{ spec.box_version }}/images'
+    output_directory: '{{ spec.project_name }}/{{ spec.name }}/{{ box_version }}/images'
     # output_directory: 'base/{{ spec.distribution }}/{{ spec.version }}/images'
     shutdown_command: "echo 'halt -p' > shutdown.sh; echo 'vagrant'|sudo -S sh 'shutdown.sh'"
     # source_path: '{{ spec.work_dir }}/{{ spec.distribution }}/{{ spec.version }}/{{ spec.source }}/{{ spec.vm_name }}.ovf'
@@ -21,8 +21,10 @@ post_processors:
   vagrant:
     type: vagrant
     keep_input_artifact: yes
-    output: '{{ spec.project_name }}/{{ spec.name }}/{{ spec.box_version }}/{{ spec.target }}-{{ spec.box_version }}.box'
-#   box_meta:
-#     type: shell-local
-#     inline:
-#       - './json.rb {{ spec.work_dir }}/boxes {{ spec.owner }} {{ spec.version }}-{{ spec.target }} {{ spec.box_version }}'
+    # output: '{{ spec.project_name }}/{{ spec.name }}/{{ spec.box_version }}/{{ spec.target }}-{{ spec.box_version }}.box'
+    output: '{{ spec.project_name }}/{{ spec.name }}/{{ box_version }}/{{ spec.target }}.box'
+  # box_meta:
+  #   type: shell-local
+  #   inline:
+  #     - './version.rb {{ spec.project_name }} {{ spec.name }}'
+  #     # - './version.rb {{ spec.work_dir }}/boxes {{ spec.owner }} {{ spec.version }}-{{ spec.target }} {{ spec.box_version }}'

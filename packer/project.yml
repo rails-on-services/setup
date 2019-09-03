@@ -1,9 +1,8 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: Build ros Vagrant boxes
+- name: Configure project to build boxes
   hosts: localhost
   tasks:
-    # - include_vars: projects-vars.yml
     - include_role:
         name: project
       vars:
@@ -12,12 +11,12 @@
             project_name: ros
             # work_dir: builds
           push:
-            organization: railsonservices
             manifest: vagrant/json
             box_dir: vagrant/boxes
             aws:
               s3_bucket: perx-ros-boxes
-              # profile: default
+              # Use a profile from ~/.aws/credentials or set AWS_* ENVs
+              profile: default
               region: ap-southeast-1
           builds:
             - name: base
@@ -26,15 +25,10 @@
               disk_size: 50000
             - name: generic
               source: base
-              push:
-                version: 0.0.1
+              push: yes
               # playbook: devops # default is name, eg ros-generic
               # target: ros # default is name, eg ros-generic
             # - name: rjayroach
             # - source: generic
             # target: ros-rjayroach
-          # box_version: 0.0.1
-          # bump_version: patch # minor, major
-          # ssh_username: test
-          # ssh_password: test # "{{ dbl }} 999999999999999999999 | random | string | to_uuid }}"
-          # ssh_private_key_file: '{{ ansible_env.HOME }}/.ssh/id_rsa'
+            # bump_version: patch # minor, major

@@ -1,9 +1,0 @@
----
-- name: Install cli tools
-  import_playbook: ../../cli.yml
-
-- name: Install backend services
-  import_playbook: ../../backend.yml
-
-- name: Install devops tools
-  import_playbook: ../../devops.yml
