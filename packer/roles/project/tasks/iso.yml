@@ -62,6 +62,11 @@
     env: "{{ base_env | combine(distro_version_env | default({}), recursive=True) | combine(build_env, recursive=True) | combine(push_env | default({}), recursive=True) }}"
 - debug: var=env
 
+- name: 'Create {{ spec.work_dir }}/{{ spec.base_path }}/{{ spec.dist_path }}'
+  file:
+    path: '{{ spec.work_dir }}/{{ spec.base_path }}/{{ spec.dist_path }}'
+    state: directory
+
 - name: 'Template distro boot file: {{ spec.work_dir }}/{{ spec.base_path }}/{{ spec.dist_path }}/{{ distro_version_env.boot_file }}'
   template:
     src: '{{ spec.dist_path }}/{{ distro_version_env.boot_file }}.j2'
