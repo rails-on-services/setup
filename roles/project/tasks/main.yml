@@ -1,9 +1,47 @@
 ---
-- name: Configure base image
-  include_tasks: base.yml
-  when: role_spec.base is defined
-
 - name: Configure build images
-  include_tasks: builds.yml
-  when: role_spec.builds is defined
+  include_tasks: build.yml
+  vars:
+    build_spec: '{{ item }}'
   with_items: '{{ role_spec.builds }}'
+  when: role_spec.builds is defined
+
+- name: Copy json.rb
+  copy:
+    src: json.rb
+    dest: '{{ spec.work_dir }}/json.rb'
+    mode: 0755
+
+- name: Copy Vagrantfile
+  copy:
+    src: Vagrantfile
+    dest: '{{ spec.work_dir }}/Vagrantfile'
+
+# - name: Create a symbolic link
+#   file:
+#     src: ../packer_cache
+#     dest: '{{ work_dir }}/packer_cache'
+#     state: link
+
+#- set_fact:
+    # Calculate the next box version
+#         FileUtils.cp("#{Prepd.files_dir}/machine/#{os_env['base_dir']}/preseed.cfg", '.')
+#         system(build_env, "packer build #{action_file}")
+#         FileUtils.rm('preseed.cfg')
+
+#     def box_version
+#       return '0.0.1' unless File.exists?(box_json_file)
+#       json = JSON.parse(File.read(box_json_file))
+#       current_version = json['versions'].first['version']
+#       return current_version if build_action.eql?(:push)
+#       inc(current_version, type: bump)
+#     end
+# 
+#     def inc(version, type: 'patch')
+#       idx = { 'major' => 0, 'minor' => 1, 'patch' => 2 }
+#       ver = version.split('.')
+#       ver[idx['patch']] = 0 if %w(major minor).include? type
+#       ver[idx['minor']] = 0 if %w(major).include? type
+#       ver[idx[type]] = ver[idx[type]].to_i + 1
+#       ver.join('.')
+#     end

@@ -1,3 +1,5 @@
 #jinja2: lstrip_blocks: True
 #!/bin/bash
-packer build --force {{ spec.build_script }}
+echo `date`
+packer build --force {{ spec.base_path }}/{{ spec.dist_path }}/{{ spec.build_script }}.json
+echo `date`

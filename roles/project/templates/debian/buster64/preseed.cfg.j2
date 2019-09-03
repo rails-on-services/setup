@@ -163,7 +163,9 @@ d-i clock-setup/ntp boolean true
 # - regular: use the usual partition types for your architecture
 # - lvm:     use LVM to partition the disk
 # - crypto:  use LVM within an encrypted partition
-d-i partman-auto/method string lvm
+d-i partman-auto/method string regular
+# d-i partman-auto/method string lvm
+# d-i partman-auto-lvm/guided_size string max
 
 # If one of the disks that are going to be automatically partitioned
 # contains an old LVM configuration, the user will normally receive a
@@ -402,4 +404,9 @@ d-i finish-install/reboot_in_progress note
 d-i preseed/late_command string \
   sed -i 's/^deb cdrom/# DISABLED deb/' /target/etc/apt/sources.list; \
   echo '{{ spec.ssh_username }} ALL=(ALL) NOPASSWD: ALL' > /target/etc/sudoers.d/{{ spec.ssh_username }}; \
-  chmod 440 /target/etc/sudoers.d/{{ spec.ssh_username }}
+  chmod 440 /target/etc/sudoers.d/{{ spec.ssh_username }}; \
+  mkdir /target/home/vagrant/.ssh; \
+  wget https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub -O /target/home/vagrant/.ssh/authorized_keys; \
+  chmod 600 /target/home/vagrant/.ssh/authorized_keys; \
+  chmod 700 /target/home/vagrant/.ssh; \
+  chown 1000:1000 -R /target/home/vagrant/.ssh

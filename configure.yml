@@ -8,30 +8,33 @@
         name: project
       vars:
         role_spec:
-          name: ros
-          # work_dir: builds
-          xbase:
-            distribution: debian
-            version: buster64
+          project:
+            project_name: ros
+            # work_dir: builds
+          push:
+            organization: railsonservices
+            manifest: vagrant/json
+            box_dir: vagrant/boxes
+            aws:
+              s3_bucket: perx-ros-boxes
+              # profile: default
+              region: ap-southeast-1
           builds:
-            - ros:
-                # profile: build
-                source: base
-                disk_size: 50000
-                # playbook: ros
-                # target: ros
-            - ros_rjayroach:
-                # profile: build
-                source: ros
-                # target: ros-rjayroach
-          # owner: rjayroach
-          # # owner: {{ role_spec.owner }}
-          # # aws_s3_bucket: {{ role_spec.aws_s3_bucket }}
-          # aws_profile: default
-          # # aws_region: {{ role_spec.aws_region }}
-          # push: no
+            - name: base
+              distribution: debian
+              version: buster64
+              disk_size: 50000
+            - name: generic
+              source: base
+              push:
+                version: 0.0.1
+              # playbook: devops # default is name, eg ros-generic
+              # target: ros # default is name, eg ros-generic
+            # - name: rjayroach
+            # - source: generic
+            # target: ros-rjayroach
           # box_version: 0.0.1
           # bump_version: patch # minor, major
-          ssh_username: test # {{ role_spec.ssh_username }}
-          ssh_password: test # "{{ dbl }} 999999999999999999999 | random | string | to_uuid }}"
+          # ssh_username: test
+          # ssh_password: test # "{{ dbl }} 999999999999999999999 | random | string | to_uuid }}"
           # ssh_private_key_file: '{{ ansible_env.HOME }}/.ssh/id_rsa'

@@ -1,16 +1,24 @@
 ## Installation
 
-This repository provides packer templates for a prepd-cli project
+This repository provides packer templates to build vagrant boxes
 
 Clone the prepd-cli repository:
 
 ```bash
-git clone git@github.com:rjayroach/prep-cli.git
-cd prepd-cli
-./prepd.yml new project_name
-cd projects/project_name
-./prepd.yml use packer
+git clone git@github.com:rjayroach/packer.git
+cd packer
+./setup.yml
 ```
+
+```bash
+./configure.yml
+```
+
+## TODO
+
+1. run json.rb to update version
+2. run preseed and fill in all values with variables
+3. remove hard coded values from image.yml
 
 ### Notes
 
@@ -52,7 +60,8 @@ vagrant up
 vagrant up --provision
 ```
 
-NOTE: When starting the machine the Vagrantfile will prompt to remove the .vagrant directory and the cache in ~/.vagrant.d/boxes/box_name
+NOTE: When starting the machine the Vagrantfile will prompt to remove the .vagrant directory and
+the cache in ~/.vagrant.d/boxes/box_name
 It is important to remove these directories if you want to ensure the machine is clean. When done, run:
 
 ```bash

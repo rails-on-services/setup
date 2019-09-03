@@ -1,17 +1,20 @@
 ---
 base_spec:
+  project:
+    project_name: default
+    work_dir: builds
+    box_version: 0.0.1
+    vm_name: image
   base:
     profile: iso
     distribution: debian
     version: buster64
     source: iso
     target: base
-  builds: {}
-  build:
-    profile: build
-  work_dir: builds
-  # ssh_username: "{{ role_spec.ssh_username | default('vagrant') }}"
-  box_version: 0.0.1
-  vm_name: image
-
-spec: "{{ base_spec | combine(role_spec, recursive=True) }}"
+    ssh_username: vagrant
+    ssh_password: vagrant
+    ssh_public_key: https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub
+  image:
+    profile: image
+    ssh_username: vagrant
+    ssh_password: vagrant

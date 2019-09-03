@@ -1,0 +1,12 @@
+---
+# For now, base is alwasy from an ISO
+- name: Configure base image from ISO
+  include_tasks: iso.yml
+  when: build_spec.name == 'base'
+
+- name: Configure image from another images
+  include_tasks: image.yml
+  when: build_spec.name != 'base'
+
+# - debug: var=build_spec
+# - meta: end_play
