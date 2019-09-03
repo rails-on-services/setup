@@ -1,0 +1,26 @@
+---
+- name: Check if binary exists
+  stat:
+    path: /usr/local/bin/packer
+  register: binary_file
+
+- name: Get binary
+  get_url:
+    url: 'https://releases.hashicorp.com/packer/{{ spec.version }}/{{ spec.file }}.zip'
+    dest: '{{ ansible_env.HOME }}/{{ spec.file }}.zip'
+  when: not binary_file.stat.exists
+  register: new_archive
+
+- name: Install Binary
+  unarchive:
+    src: '{{ ansible_env.HOME }}/{{ spec.file }}.zip'
+    dest: /usr/local/bin
+    copy: no
+  when: not binary_file.stat.exists
+  become: yes
+
+- name: Remove zip
+  file:
+    path: '{{ ansible_env.HOME }}/{{ spec.file }}.zip'
+    state: absent
+  when: false

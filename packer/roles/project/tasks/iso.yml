@@ -1,0 +1,86 @@
+---
+# - debug: var=role_spec
+# - debug: var=base_spec
+# - debug: var=build_spec
+
+- set_fact:
+    spec: "{{ base_spec.project | combine(role_spec.project, recursive=True) | combine(base_spec.base, recursive=True) | combine(build_spec, recursive=True) }}"
+
+# - debug: var=spec
+
+- name: Set values derived from spec
+  set_fact:
+    derived_spec:
+      dist_path: '{{ spec.distribution }}/{{ spec.version }}'
+      base_path: base
+      build_script: '{{ spec.target }}-from-{{ spec.source }}'
+
+- name: Combine derived spec with original spec
+  set_fact:
+    spec: "{{ spec | combine(derived_spec, recursive=True) }}"
+
+- debug: var=spec
+
+- name: Include base distibution/version vars
+  include_vars:
+    # Example: debian/buster64.yml
+    file: '{{ spec.dist_path }}.yml'
+    name: distro_version_env
+
+# - debug: var=distro_version_env
+
+- name: Include profile vars
+  include_vars:
+    file: '{{ spec.profile }}.yml'
+    name: build_env
+
+# - debug: var=build_env
+
+- name: Include s3 push vars
+  include_vars:
+    file: push.yml
+    name: push_env
+  when: spec.push is defined and spec.push | bool
+
+- set_fact:
+    base_env:
+      provisioners:
+        ansible:
+# TODO: the group should be based of the type, e.g. base
+          groups: ['packer-{{ spec.target }}']
+# TODO: the playbook should be based of the type, e.g. base
+          playbook_file: '{{ playbook_dir }}/packer.yml'
+          type: ansible
+          user: '{{ spec.ssh_username }}'
+          ansible_env_vars:
+            - "ANSIBLE_RETRY_FILES_ENABLED=false"
+
+# - debug: var=base_env
+
+- name: Set env for builder
+  set_fact:
+    env: "{{ base_env | combine(distro_version_env | default({}), recursive=True) | combine(build_env, recursive=True) | combine(push_env | default({}), recursive=True) }}"
+- debug: var=env
+
+- name: 'Template distro boot file: {{ spec.work_dir }}/{{ spec.base_path }}/{{ spec.dist_path }}/{{ distro_version_env.boot_file }}'
+  template:
+    src: '{{ spec.dist_path }}/{{ distro_version_env.boot_file }}.j2'
+    dest: '{{ spec.work_dir }}/{{ spec.base_path }}/{{ spec.dist_path }}/{{ distro_version_env.boot_file }}'
+
+- name: 'Create {{ spec.work_dir }}/{{ spec.base_path }}/{{ spec.dist_path }}'
+  file:
+    path: '{{ spec.work_dir }}/{{ spec.base_path }}/{{ spec.dist_path }}'
+    state: directory
+
+- name: 'Template packer build definition: {{ spec.work_dir }}/{{ spec.base_path }}/{{ spec.dist_path }}/{{ spec.build_script }}.json'
+  template:
+    src: build-script.json.j2
+    dest: '{{ spec.work_dir }}/{{ spec.base_path }}/{{ spec.dist_path }}/{{ spec.build_script }}.json'
+
+- name: 'Template user shell script: {{ spec.work_dir }}/base-{{ spec.build_script }}'
+  template:
+    src: build.j2
+    dest: '{{ spec.work_dir }}/base-{{ spec.distribution }}-{{ spec.version }}-{{ spec.build_script }}'
+    mode: 0755
+
+# - meta: end_play

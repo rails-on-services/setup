@@ -1,0 +1,49 @@
+---
+# - include_role:
+#     name: prepd-cli/prompt
+#   vars:
+#     role_config:
+#       work_dir: '{{ ansible_env.HOME }}/packer'
+#       owner: ''
+#       aws_s3_bucket: ''
+#       aws_region: ''
+#       ssh_username: ''
+#       ssh_private_key_file: '{{ ansible_env.HOME }}/.ssh/id_rsa'
+#     label: packer
+
+# Debian has a more complex install than mac
+- name: Install binary on Debian
+  include_tasks: debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Install binary on MacOS
+  homebrew:
+    name: packer
+    state: present
+  when: ansible_os_family == 'Darwin'
+
+- name: Ensure plugins directory exists
+  file:
+    path: '{{ spec.plugin_dir }}'
+    state: directory
+
+- name: Install plugins
+  include_tasks: plugin.yml
+  with_dict: '{{ spec.plugins }}'
+  loop_control:
+    loop_var: plugin
+
+# This is the build.yml
+- name: 'Template config to {{ cli_vars_dir }}/packer.yml'
+  template:
+    src: cli.yml.j2
+    dest: '{{ cli_vars_dir }}/packer.yml'
+  when: false
+
+# This is the playbook that is called to 'provision' the image after packer creates it
+- name: 'Template playbook to {{ playbook_dir }}/packer.yml'
+  template:
+    src: packer.yml.j2
+    dest: '{{ playbook_dir }}/packer.yml'
+    mode: 0755
+  when: false

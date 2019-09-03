@@ -1,0 +1,28 @@
+---
+builders:
+  virtualbox_ovf:
+    guest_additions_mode: disable
+    headless: no
+    output_directory: '{{ spec.project_name }}/{{ spec.name }}/{{ spec.box_version }}/images'
+    # output_directory: 'base/{{ spec.distribution }}/{{ spec.version }}/images'
+    shutdown_command: "echo 'halt -p' > shutdown.sh; echo 'vagrant'|sudo -S sh 'shutdown.sh'"
+    # source_path: '{{ spec.work_dir }}/{{ spec.distribution }}/{{ spec.version }}/{{ spec.source }}/{{ spec.vm_name }}.ovf'
+    source_path: '{{ spec.source_image }}'
+    # ssh_private_key_file: '{{ spec.ssh_private_key_file }}'
+    ssh_username: '{{ spec.ssh_username }}'
+    ssh_password:  '{{ spec.ssh_password }}'
+    ssh_wait_timeout: 30s
+    type: virtualbox-ovf
+    vm_name: '{{ spec.vm_name }}'
+
+post_processors:
+  # _order: [vagrant, box_meta]
+  _order: [vagrant]
+  vagrant:
+    type: vagrant
+    keep_input_artifact: yes
+    output: '{{ spec.project_name }}/{{ spec.name }}/{{ spec.box_version }}/{{ spec.target }}-{{ spec.box_version }}.box'
+#   box_meta:
+#     type: shell-local
+#     inline:
+#       - './json.rb {{ spec.work_dir }}/boxes {{ spec.owner }} {{ spec.version }}-{{ spec.target }} {{ spec.box_version }}'

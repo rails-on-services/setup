@@ -1,0 +1,11 @@
+post_processors:
+  vagrant:
+    - '{{ build_env.post_processors.vagrant }}'
+    - manifest: '{{ role_spec.push.manifest }}/{{ role_spec.push.organization }}/{{ spec.target }}.json'
+      box_dir: '{{ role_spec.push.box_dir }}/{{ role_spec.push.organization }}/{{ spec.target }}'
+      box_name: '{{ role_spec.push.organization }}/{{ spec.target }}'
+      bucket: '{{ role_spec.push.aws.s3_bucket }}'
+      # profile: '{{ role_spec.push.aws.profile }}'
+      region: '{{ role_spec.push.aws.region }}'
+      type: vagrant-s3
+      # version: '{{ spec.box_version }}'

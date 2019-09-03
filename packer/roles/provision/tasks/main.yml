@@ -1,0 +1,12 @@
+---
+- name: Install NFS packages for sharing between Vagrant vm and host
+  apt:
+    name: '{{ item }}'
+  with_items: [nfs-common, rpcbind]
+  become: yes
+
+- name: Set default locale
+  template:
+    src: locale.j2
+    dest: /etc/default/locale
+  become: yes
