@@ -405,8 +405,8 @@ d-i preseed/late_command string \
   sed -i 's/^deb cdrom/# DISABLED deb/' /target/etc/apt/sources.list; \
   echo '{{ spec.ssh_username }} ALL=(ALL) NOPASSWD: ALL' > /target/etc/sudoers.d/{{ spec.ssh_username }}; \
   chmod 440 /target/etc/sudoers.d/{{ spec.ssh_username }}; \
-  mkdir /target/home/vagrant/.ssh; \
-  wget https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub -O /target/home/vagrant/.ssh/authorized_keys; \
-  chmod 600 /target/home/vagrant/.ssh/authorized_keys; \
-  chmod 700 /target/home/vagrant/.ssh; \
-  chown 1000:1000 -R /target/home/vagrant/.ssh
+  mkdir /target/home/{{ spec.ssh_username }}/.ssh; \
+  wget {{ spec.ssh_public_key }} -O /target/home/{{ spec.ssh_username }}/.ssh/authorized_keys; \
+  chmod 600 /target/home/{{ spec.ssh_username }}/.ssh/authorized_keys; \
+  chmod 700 /target/home/{{ spec.ssh_username }}/.ssh; \
+  chown 1000:1000 -R /target/home/{{ spec.ssh_username }}/.ssh

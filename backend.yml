@@ -9,17 +9,20 @@
     - name: Install machine tools
       import_role:
         name: machine
-      vars: {}
+      vars:
+        role_spec: {}
 
     - name: Install and setup Docker
       import_role:
         name: docker
-      vars: {}
+      vars:
+        role_spec: {}
 
     - name: Install Redis
       import_role:
         name: redis
-      vars: {}
+      vars:
+        role_spec: {}
 
     - name: Install and setup Postgres
       import_role:

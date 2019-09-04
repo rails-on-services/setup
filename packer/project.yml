@@ -28,7 +28,10 @@
               push: yes
               # playbook: devops # default is name, eg ros-generic
               # target: ros # default is name, eg ros-generic
-            # - name: rjayroach
-            # - source: generic
-            # target: ros-rjayroach
-            # bump_version: patch # minor, major
+            - name: rjayroach
+              source: generic
+              provision_path: /Users/roberto/p3/data/rjayroach
+              playbook: packer.yml
+              # push: yes
+              # target: ros-rjayroach
+              # bump_version: patch # minor, major

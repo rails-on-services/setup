@@ -17,10 +17,22 @@
 - name: Set values derived from spec
   set_fact:
     derived_spec:
-      source_image: '{{ source_spec.name }}/{{ source_spec.distribution }}/{{ source_spec.version }}/images/image.ovf'
       target: "{{ build_spec.target | default(role_spec.project.project_name + '-' + build_spec.name) }}"
       dist_path: '{{ spec.name }}'
       base_path: '{{ spec.project_name }}'
+
+- name: Set values derived from spec
+  set_fact:
+    derived_spec:
+      "{{ derived_spec | combine({ 'source_image': source_spec.name + '/' + source_spec.distribution + '/' + source_spec.version + '/images/image.ovf' }) }}"
+  when: source_spec.name == 'base'
+
+- name: Set values derived from spec
+  set_fact:
+    derived_spec:
+      # source_image: '{{ role_spec.project.project_name }}/{{ source_spec.name }}/0.0.4/images/image.ovf'
+      "{{ derived_spec | combine({ 'source_image': role_spec.project.project_name + '/' + source_spec.name + '/0.0.4/images/image.ovf' }) }}"
+  when: source_spec.name != 'base'
 
 - name: Set values derived from spec
   set_fact:
@@ -77,14 +89,14 @@
             - 'sudo apt install git python-pip --yes'
             - 'sudo pip install ansible'
         ansible:
-          playbook_file: '{{ playbook_dir }}/provision/{{ build_spec.playbook | default(spec.target) }}.yml'
+          playbook_file: "{{ spec.provision_path | default(playbook_dir + '/provision') }}/{{ build_spec.playbook | default(spec.target + '.yml') }}"
           host_alias: backend
           type: ansible
           user: '{{ spec.ssh_username }}'
           extra_arguments: [ "--extra-vars", "clone_repos=no" ]
           ansible_env_vars:
             - "ANSIBLE_RETRY_FILES_ENABLED=false"
-            - "ANSIBLE_ROLES_PATH={{ playbook_dir.split('/')[0:-1] | join('/') }}/roles"
+            - "ANSIBLE_ROLES_PATH={{ spec.provision_path | default(playbook_dir.split('/')[0:-1] | join('/')) }}/roles"
 
 # - debug: var=base_env
 

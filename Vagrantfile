@@ -86,15 +86,15 @@ Vagrant.configure('2') do |config|
     linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
 
   # Provisioning
-  # config.vm.provision 'build', type: 'shell', privileged: false, inline: <<-SHELL
-  #   sudo apt install git --yes
-  #   DIRECTORY=~/#{project_name}/ros/setup
-  #   if [ ! -d "$DIRECTORY" ]; then
-  #     git clone https://github.com/rails-on-services/setup.git $DIRECTORY
-  #   fi
-  #   $DIRECTORY/setup.sh
-  #   cd $DIRECTORY && ./backend.yml
-  #   cd $DIRECTORY && ./devops.yml
-  #   cd $DIRECTORY && ./cli.yml
-  # SHELL
+  config.vm.provision 'build', type: 'shell', privileged: false, inline: <<-SHELL
+    # sudo apt install git --yes
+    DIRECTORY=~/#{project_name}/ros-tools/setup
+    if [ ! -d "$DIRECTORY" ]; then
+      git clone https://github.com/rails-on-services/setup.git $DIRECTORY
+    fi
+    # $DIRECTORY/setup.sh
+    # cd $DIRECTORY && ./backend.yml
+    # cd $DIRECTORY && ./devops.yml
+    cd $DIRECTORY && ./cli.yml
+  SHELL
 end

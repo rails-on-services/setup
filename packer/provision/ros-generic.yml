@@ -9,6 +9,7 @@
 # pulling the repos; This is so that when the VM is booted with an NFS share
 # it then gets the projects from the shared directory
 # This requires to user to run cli.yml after the machine is booted the first time on a new project
+# which is handled as a provision step in the Vagrantfile
 - name: Install cli tools
   import_playbook: ../../cli.yml
 

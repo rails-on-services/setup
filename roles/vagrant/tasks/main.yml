@@ -1,4 +1,17 @@
 ---
+# See: https://stackoverflow.com/questions/42695004/importerror-no-module-named-ssl-match-hostname-when-importing-the-docker-sdk-fo
+- name: Remove pip package causing docker-compose to fail
+  pip:
+    name: [backports.ssl-match-hostname]
+    state: absent
+  become: yes
+
+- name: Install OS package to replace pip package
+  apt:
+    name: [python-backports.ssl-match-hostname]
+    state: present
+  become: yes
+
 - name: Install NFS packages for sharing between Vagrant vm and host
   apt:
     name: [nfs-common, rpcbind]

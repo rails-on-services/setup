@@ -16,8 +16,12 @@ class Version
   end
 
   def current_version
-    json = open("https://perx-ros-boxes.s3-ap-southeast-1.amazonaws.com/vagrant/json/#{project}/#{name}.json")
+    url = "https://perx-ros-boxes.s3-ap-southeast-1.amazonaws.com/vagrant/json/#{project}/#{name}.json"
+    # STDOUT.puts "Using url: #{url}"
+    json = open(url)
     @current_version ||= JSON.parse(json.read)['versions'].last['version']
+  rescue
+    @current_version ||= '0.0.0'
   end
 end
 
