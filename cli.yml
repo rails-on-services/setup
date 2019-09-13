@@ -6,6 +6,12 @@
       include_vars:
         file: cli-vars.yml
 
+    - name: Install Site Reliability Engineering (SRE) tools
+      pip:
+        name: [locustio, powerfulseal]
+        state: present
+      become: yes
+
     - name: Install node and requested node packages
       import_role:
         name: nodejs
