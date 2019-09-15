@@ -8,6 +8,7 @@ Vagrant.configure('2') do |config|
     { name: 'angular', guest: 4200, host: 4200, enabled: true },
     { name: 'localstack-ui', guest: 8080, host: 8080, enabled: true },
     { name: 'locustio', guest: 8089, host: 8089, enabled: true },
+    { name: 'nginx-alt', guest: 30000, host: 30000, enabled: true },
     { name: 'live-reload', guest: 35729, host: 35729, enabled: true }
   ]
 
@@ -80,7 +81,7 @@ Vagrant.configure('2') do |config|
   end
 
   # Windows compatible mount options. Tested on Win 7 SP1
-  mount_options = Vagrant::Util::Platform.windows? ? ['dmode=775','fmode=775'] : ['rw', 'vers=3', 'tcp']
+  mount_options = Vagrant::Util::Platform.windows? ? ['dmode=775','fmode=775'] : ['rw', 'vers=3', 'tcp', 'actimeo=1']
 
   # Shared directories
   config.vm.synced_folder '.', '/vagrant', disabled: true
