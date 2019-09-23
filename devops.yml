@@ -81,7 +81,7 @@
         creates: '{{ bin_dir }}/helm'
         exclude: [LICENSE, README.md]
       become: yes
-    
+
     - name: Move binary to path
       command: 'mv linux-amd64/helm {{ bin_dir }}'
       args:
@@ -95,12 +95,15 @@
     - name: Install Helm Incubator repo
       command: 'helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator'
 
+    - name: Add ros helm repo
+      command: 'helm repo add ros https://rails-on-services.github.io/helm-charts'
+
     - name: 'Remove linux'
       file:
         path: '{{ bin_dir }}/linux-amd64'
         state: absent
       become: yes
-    
+
     - name: Insert aliases
       include_role:
         name: aliases
