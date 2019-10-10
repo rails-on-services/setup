@@ -85,6 +85,12 @@ Vagrant.configure('2') do |config|
   # Windows compatible mount options. Tested on Win 7 SP1
   mount_options = Vagrant::Util::Platform.windows? ? ['dmode=775','fmode=775'] : ['rw', 'vers=3', 'tcp', 'actimeo=1']
 
+  # Workaround for shared folders on macOS Catalina
+  # dir_prefix = RbConfig::CONFIG['host_os'].eql?('darwin13.4.0') ? '/System/Volumes/Data' : ''
+  # config.vm.synced_folder "#{dir_prefix}#{Dir.pwd}", '/vagrant', disabled: true
+  # config.vm.synced_folder "#{dir_prefix}#{Dir.pwd}", "/home/vagrant/#{project_name}", type: 'nfs', mount_options: mount_options,
+  #   linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
+
   # Shared directories
   config.vm.synced_folder '.', '/vagrant', disabled: true
   config.vm.synced_folder '.', "/home/vagrant/#{project_name}", type: 'nfs', mount_options: mount_options,
