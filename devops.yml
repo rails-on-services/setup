@@ -8,9 +8,7 @@
 
     - name: Install awscli
       pip:
-        # Temporary workaround as latest awscli fails to get EKS credentials in our CircleCi environment
-        # https://github.com/kubernetes/kubectl/issues/747
-        name: awscli==1.16.210
+        name: awscli
         state: present
       become: yes
 
