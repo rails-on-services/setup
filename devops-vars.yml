@@ -4,5 +4,5 @@ eks_authenticator: 1.13.7/2019-06-11
 skaffold: v0.38.0
 vault: 1.2.1
 terraform: 0.12.9
-helm: 2.14.3
+helm: 2.15.2
 ruby_versions: ['2.6.3']
