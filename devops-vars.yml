@@ -1,8 +1,8 @@
 ---
 bin_dir: /usr/local/bin
 eks_authenticator: 1.13.7/2019-06-11
-skaffold: v1.0.1
+skaffold: v1.1.0
 vault: 1.2.1
-terraform: 0.12.9
-helm: 2.15.2
+terraform: 0.12.18
+helm: 2.16.1
 ruby_versions: ['2.6.3']
