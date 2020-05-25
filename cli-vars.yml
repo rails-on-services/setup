@@ -1,5 +1,5 @@
 ---
 clone_repos: yes
-node_version: 11.x
+node_version: 12.x
 node_packages: ['openapi-to-postmanv2', '@angular/cli']
 ros_cli_version: master

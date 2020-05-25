@@ -7,7 +7,6 @@
     aliases_marker: ros
     aliases_block: |
       export PATH=$PATH:{{ project_dir }}/exe
-      export RUBYLIB=$RUBYLIB:{{ project_dir }}/lib
 
 - name: install ros-cli dependencies
   shell: . /etc/profile && ~/.rbenv/shims/bundle install

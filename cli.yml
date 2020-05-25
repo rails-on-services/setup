@@ -8,8 +8,9 @@
 
     - name: Install Site Reliability Engineering (SRE) tools
       pip:
-        name: [locustio, powerfulseal]
+        name: [locust, powerfulseal]
         state: present
+        executable: pip3
       become: yes
 
     - name: Install node and requested node packages
@@ -28,7 +29,7 @@
           project_dir: "{{ lookup('pipe', 'pwd') }}/.."
           repositories:
             ros:
-              url: https://github.com/rails-on-services/ros-cli.git
+              url: https://github.com/rails-on-services/cnfs-cli.git
               name: cli
               version: "{{ ros_cli_version }}"
       when: clone_repos|bool == True
@@ -37,5 +38,5 @@
       import_role:
         name: cli
       vars:
-        project_dir: "{{ lookup('pipe', 'pwd') }}/../cli"
+        project_dir: "{{ lookup('pipe', 'pwd') }}/../cli/cli"
       when: clone_repos|bool == True
