@@ -1,0 +1,13 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: db_instance
+  tasks:
+    - name: Install and setup Postgres
+      import_role:
+        name: postgres
+        # vars:
+        #   role_spec:
+        #     users:
+        #       first:
+        #         name: '{{ ansible_env.USER }}'
+        #         password: '{{ ansible_env.USER }}'

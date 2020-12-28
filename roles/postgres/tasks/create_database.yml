@@ -1,0 +1,9 @@
+---
+- name: Create a new database
+  postgresql_db:
+    name: '{{ database.value.name | default(database.key) }}'
+    owner: '{{ database.value.owner }}'
+    state: present
+  with_dict: '{{ spec.databases }}'
+  loop_control:
+    loop_var: database

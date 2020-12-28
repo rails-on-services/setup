@@ -2,19 +2,19 @@
 - name: 'Install on detected OS ({{ ansible_os_family }})'
   include_tasks: '{{ ansible_os_family | lower }}.yml'
 
-- import_tasks: create.yml
-  become: yes
-  become_user: postgres
+# - import_tasks: create.yml
+#   become: yes
+#   become_user: postgres
 
-- include_role:
-    name: aliases
-  vars:
-    aliases_marker: postgres
-    aliases_block: |
-      alias supg='sudo su - postgres'
-      alias psqld='psql -d postgres'
-
-      # Dump a schema named $2 from a database named $1
-      pgd() {
-        pg_dump $1 -n $2 | gzip -c > $1.sql.gz
-      }
+# - include_role:
+#     name: aliases
+#   vars:
+#     aliases_marker: postgres
+#     aliases_block: |
+#       alias supg='sudo su - postgres'
+#       alias psqld='psql -d postgres'
+# 
+#       # Dump a schema named $2 from a database named $1
+#       pgd() {
+#         pg_dump $1 -n $2 | gzip -c > $1.sql.gz
+#       }

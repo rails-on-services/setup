@@ -7,9 +7,9 @@
     cache_valid_time: 86400
   become: yes
 
-- name: Copy .inputrc to postgres home
-  copy:
-    src: inputrc
-    dest: '{{ spec.home }}/.inputrc'
-    owner: postgres
-  become: yes
+# - name: Copy .inputrc to postgres home
+#   copy:
+#     src: inputrc
+#     dest: '{{ spec.home }}/.inputrc'
+#     owner: postgres
+#   become: yes
